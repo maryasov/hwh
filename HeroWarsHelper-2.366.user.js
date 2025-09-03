@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name			HeroWarsHelper
-// @name:en			HeroWarsHelper
-// @name:ru			HeroWarsHelper
+// @name			HeroWarsHelperMod
+// @name:en			HeroWarsHelperMod
+// @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelper
 // @version			2.366 + logs
 // @description		Automation of actions for the game Hero Wars
