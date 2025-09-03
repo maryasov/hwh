@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelper
 // @name:ru			HeroWarsHelper
 // @namespace		HeroWarsHelper
-// @version			2.366
+// @version			2.366 + logs
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -125,7 +125,7 @@ this.fetch = function (url, options) {
 		}
 		/**
 		 * Mock response for blocked URL
-		 * 
+		 *
 		 * Мокаем ответ для заблокированного URL
 		 */
 		const mockResponse = new Response('Custom blocked response', {
@@ -1189,10 +1189,10 @@ function getInput(inputName) {
 	return inputs[inputName]?.input?.value;
 }
 
-/** 
+/**
  * Control FPS
- * 
- * Контроль FPS 
+ *
+ * Контроль FPS
  */
 let nextAnimationFrame = Date.now();
 const oldRequestAnimationFrame = this.requestAnimationFrame;
@@ -1581,7 +1581,7 @@ let missionItems = {}
 let lastMissionStart = {}
 /**
  * Start time of the last battle in the company
- * 
+ *
  * Время начала последнего боя в кампании
  */
 let lastMissionBattleStart = 0;
@@ -1695,26 +1695,26 @@ let correctShowOpenArtifact = 0;
 /**
  * Data for the last battle in the dungeon
  * (Fix endless cards)
- * 
+ *
  * Данные для последнего боя в подземке
  * (Исправление бесконечных карт)
  */
 let lastDungeonBattleData = null;
 /**
  * Start time of the last battle in the dungeon
- * 
+ *
  * Время начала последнего боя в подземелье
  */
 let lastDungeonBattleStart = 0;
 /**
  * Subscription end time
- * 
+ *
  * Время окончания подписки
  */
 let subEndTime = 0;
-/** 
+/**
  * Number of prediction cards
- * 
+ *
  * Количество карт предсказаний
  */
 const countPredictionCard = 0;
@@ -1722,7 +1722,7 @@ const countPredictionCard = 0;
 /**
  * Brawl pack
  *
- * Пачка для потасовок 
+ * Пачка для потасовок
  */
 let brawlsPack = null;
 
@@ -1808,7 +1808,7 @@ function confShow(message, yesCallback, noCallback) {
 /**
  * Override/proxy the method for creating a WS package send
  *
- * Переопределяем/проксируем метод создания отправки WS пакета 
+ * Переопределяем/проксируем метод создания отправки WS пакета
  */
 WebSocket.prototype.send = function (data) {
 	if (!this.isSetOnMessage) {
@@ -1920,7 +1920,7 @@ XMLHttpRequest.prototype.send = async function (sourceData) {
 			getAutoGifts();
 
 			cheats.activateHacks();
-		
+
 			justInfo();
 			if (isChecked('dailyQuests')) {
 				testDailyQuests();
@@ -2009,7 +2009,7 @@ XMLHttpRequest.prototype.send = async function (sourceData) {
 		} catch(e) {
 			debugger;
 		}
-		
+
 	}
 };
 /**
@@ -2199,9 +2199,9 @@ async function checkChangeSend(sourceData, tempData) {
 				if (isChecked('autoBrawls') && !HWHClasses.executeBrawls.isBrawlsAutoStart && call.name == 'brawl_endBattle') {
 				}
 			}
-			/** 
+			/**
 			 * Save pack for Brawls
-			 * 
+			 *
 			 * Сохраняем пачку для потасовок
 			 */
 			if (isChecked('autoBrawls') && !HWHClasses.executeBrawls.isBrawlsAutoStart && call.name == 'brawl_startBattle') {
@@ -2337,7 +2337,7 @@ async function checkChangeSend(sourceData, tempData) {
 			}
 			/**
 			 * Saving the request to start the last battle
-			 * Сохранение запроса начала последнего боя 
+			 * Сохранение запроса начала последнего боя
 			 */
 			if (
 				call.name == 'clanWarAttack' ||
@@ -2415,7 +2415,7 @@ async function checkChangeSend(sourceData, tempData) {
 						call.args.progress = result.progress;
 						call.args.result = result.result;
 					}
-						
+
 					let timer = result.battleTimer + addBattleTimer;
 					const period = Math.ceil((Date.now() - lastDungeonBattleStart) / 1000);
 					console.log(timer, period);
@@ -2506,7 +2506,7 @@ async function checkChangeSend(sourceData, tempData) {
 				lastMissionStart = call.args;
 				lastMissionBattleStart = Date.now();
 			}
-			
+
 			/**
 			 * Specify the quantity for Titan Orbs and Pet Eggs
 			 * Указать количество для сфер титанов и яиц петов
@@ -2705,7 +2705,7 @@ async function checkChangeResponse(response) {
 		let countTypeReward = 0;
 		let readQuestInfo = false;
 		for (const call of respond.results) {
-			/** 
+			/**
 			 * Obtaining initial data for completing quests
 			 * Получение исходных данных для выполнения квестов
 			 */
@@ -2763,7 +2763,7 @@ async function checkChangeResponse(response) {
 			}
 			/**
 			 * Hiding donation offers 4
-			 * Скрываем предложения доната 4 
+			 * Скрываем предложения доната 4
 			 */
 			if (call.result?.specialOffers) {
 				const offers = call.result.specialOffers;
@@ -2975,9 +2975,9 @@ async function checkChangeResponse(response) {
 			} else {
 				correctShowOpenArtifact = 0;
 			}
-			
-			/** 
-			 * Sum the result of opening Pet Eggs 
+
+			/**
+			 * Sum the result of opening Pet Eggs
 			 * Суммирование результата открытия яиц питомцев
 			 */
 			if (isChecked('countControl') && call.ident == callsIdent['pet_chestOpen']) {
@@ -3102,7 +3102,7 @@ async function checkChangeResponse(response) {
 				lastDungeonBattleData = call.result.response;
 				lastDungeonBattleStart = Date.now();
 			}
-			/** 
+			/**
 			 * Getting the number of prediction cards
 			 * Получение количества карт предсказаний
 			 */
@@ -3908,9 +3908,9 @@ function addProgress(text) {
 	scriptMenu.addStatus(text);
 }
 
-/** 
+/**
  * Returns the timer value depending on the subscription
- * 
+ *
  * Возвращает значение таймера в зависимости от подписки
  */
 function getTimer(time, div) {
@@ -3971,7 +3971,7 @@ this.HWHData = {
  * Calculates HASH MD5 from string
  *
  * Расчитывает HASH MD5 из строки
- * 
+ *
  * [js-md5]{@link https://github.com/emn178/js-md5}
  *
  * @namespace md5
@@ -4164,7 +4164,7 @@ const popup = new (function () {
 	this.init = function () {
 		if (this.isInit) {
 			return;
-		} 
+		}
 		addStyle();
 		addBlocks();
 		addEventListeners();
@@ -5296,8 +5296,8 @@ scriptMenu.init();
 scriptMenu.addHeader('v1.508');
 scriptMenu.addCheckbox('testHack', 'Тестовый взлом игры!');
 scriptMenu.addButton({
-	text: 'Запуск!', 
-	onClick: () => console.log('click'), 
+	text: 'Запуск!',
+	onClick: () => console.log('click'),
 	title: 'подсказака',
 });
 scriptMenu.addInputText('input подсказака');
@@ -5323,7 +5323,7 @@ scriptMenu.on('beforeAddDetails', (summaryText, name) => {
 
 /**
  * Game Library
- * 
+ *
  * Игровая библиотека
  */
 class Library {
@@ -5537,7 +5537,7 @@ function getAllValuesStartingWith(prefix) {
 /**
  * Opens or migrates to a database
  *
- * Открывает или мигрирует в базу данных 
+ * Открывает или мигрирует в базу данных
  */
 async function openOrMigrateDatabase(userId) {
 	storage.init();
@@ -6163,7 +6163,7 @@ function executeDungeon(resolve, reject) {
 	/**
 	 * Returns the coefficient of condition of the
 	 * difference in titanium before and after the battle
-	 * 
+	 *
 	 * Возвращает коэффициент состояния титанов после боя
 	 */
 	function getState(result) {
@@ -8789,7 +8789,7 @@ async function justInfo() {
 		const titansArenaButton = buttons['testTitanArena'].button;
 		const titansArenaDot = titansArenaButton.querySelector('.scriptMenu_dot');
 
-		if (titansLevel < 7 && titansStatus == 'battle') { ; 
+		if (titansLevel < 7 && titansStatus == 'battle') { ;
 			titansArenaButton.classList.add('scriptMenu_attention');
 			titansArenaDot.title = `${titansLevel} ${I18N('LEVEL')}`;
 			titansArenaDot.innerText = titansLevel;
@@ -8877,7 +8877,7 @@ async function farmStamina(lootBoxId = 148) {
 		{ msg: I18N('BTN_YES'), result: true },
 		{ msg: I18N('STAMINA'), isInput: true, default: maxFarmEnergy },
 	]);
-	
+
 	if (!+result) {
 		return;
 	}
@@ -8942,13 +8942,13 @@ async function fillActive() {
 		setProgress(I18N('NO_MORE_ACTIVITY'), true);
 		return;
 	}
-	
+
 	let countGetActive = 0;
 	const quest = quests.find(e => e.id > 10046 && e.id < 10051);
 	if (quest) {
 		countGetActive = 1750 - quest.progress;
-	} 
-	
+	}
+
 	if (countGetActive <= 0) {
 		countGetActive = maxActive;
 	}
@@ -9650,8 +9650,8 @@ class epicBrawl {
 				coins += farm.coin[39];
 			}
 
-			setProgress(I18N('EPIC_BRAWL_RESULT', { 
-				i, wins, attempts, coins, 
+			setProgress(I18N('EPIC_BRAWL_RESULT', {
+				i, wins, attempts, coins,
 				progress: streak.progress,
 				nextStage: streak.nextStage,
 				end: '',
@@ -9833,7 +9833,7 @@ async function rewardBossRatingEventSouls() {
 }
 /**
  * Spin the Seer
- * 
+ *
  * Покрутить провидца
  */
 async function rollAscension() {
@@ -9855,7 +9855,7 @@ async function rollAscension() {
 
 /**
  * Collect gifts for the New Year
- * 
+ *
  * Собрать подарки на новый год
  */
 function getGiftNewYear() {
@@ -11102,7 +11102,7 @@ function executeAutoBattle(resolve, reject) {
 	let countBattle = 0;
 	let countError = 0;
 	let findCoeff = 0;
-	let dataNotEeceived = 0; 
+	let dataNotEeceived = 0;
 	let stopAutoBattle = false;
 
 	let isSetWinTimer = false;
@@ -11327,7 +11327,7 @@ function executeAutoBattle(resolve, reject) {
 			if (nameFuncStartBattle == 'invasion_bossStart' && !isSetWinTimer) {
 				const { invasionInfo, invasionDataPacks } = HWHData;
 
-				
+
 				let timer = '0';
 				const pack = invasionDataPacks[invasionInfo.bossLvl];
 				if (pack && pack.timer && (pack.buff == invasionInfo.buff)) {
@@ -13654,7 +13654,7 @@ function testCompany(missions, isRaids = false) {
 	});
 }
 
-/** 
+/**
  * Fulfilling company missions
  * Выполнение миссий компании
  */
