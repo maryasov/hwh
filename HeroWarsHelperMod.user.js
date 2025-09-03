@@ -8384,7 +8384,7 @@ this.sendsMission = async function (param) {
         //    text += '<br>gear: ' + JSON.stringify(missionItems['gear'])
         //}
         console.log('knownItems', knownItems)
-        const ignoreItemsKeys = ['gear']
+        const ignoreItemsKeys = ['gear', 'consumable']
         for (let k in missionItems) {
             if (!ignoreItemsKeys.includes(k) && missionItems[k]) {
                 //console.log('BattleCalc reward fragment', r.battleData.reward.fragmentGear)
