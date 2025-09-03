@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-04-05-29
+// @version			2.366.25-09-04-05-44
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -8378,10 +8378,11 @@ function questAllFarm() {
 this.sendsMission = async function (param) {
     const knownItems = await fetch('https://raw.githubusercontent.com/maryasov/hwh/refs/heads/main/items.json').then(e => e.json())
     const rewardLabels = {
+      scroll: 'Рецепт',
       gear: 'G',
       consumable: 'Расх',
       fragmentGear: 'Фраг(G)',
-      fragmentScroll: 'Фраг(S)',
+      fragmentScroll: 'Фраг(Р)',
     }
     const rewardText = () => {
         let text = ''
