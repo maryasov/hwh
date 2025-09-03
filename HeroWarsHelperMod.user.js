@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-04-05-44
+// @version			2.366.25-09-04-06-29
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -8391,7 +8391,7 @@ this.sendsMission = async function (param) {
         //    text += '<br>gear: ' + JSON.stringify(missionItems['gear'])
         //}
         console.log('knownItems', knownItems)
-        const ignoreItemsKeys = ['gear'/*, 'consumable'*/]
+        const ignoreItemsKeys = ['gear', 'consumable']
         for (let k in missionItems) {
             if (!ignoreItemsKeys.includes(k) && missionItems[k]) {
                 //console.log('BattleCalc reward fragment', r.battleData.reward.fragmentGear)
