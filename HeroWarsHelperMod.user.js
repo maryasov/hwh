@@ -7,16 +7,16 @@
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
-// @author			ZingerY
-// @license 		Copyright ZingerY
+// @author			Wagner
+// @license 		Copyright Wagner
 // @homepage		https://zingery.ru/scripts/HeroWarsHelper.user.js
 // @icon			https://zingery.ru/scripts/VaultBoyIco16.ico
 // @icon64			https://zingery.ru/scripts/VaultBoyIco64.png
 // @match			https://www.hero-wars.com/*
 // @match			https://apps-1701433570146040.apps.fbsbx.com/*
 // @run-at			document-start
-// @downloadURL https://update.greasyfork.org/scripts/450693/HeroWarsHelper.user.js
-// @updateURL https://update.greasyfork.org/scripts/450693/HeroWarsHelper.meta.js
+// @downloadURL https://github.com/maryasov/hwh/raw/refs/heads/main/HeroWarsHelperMod.user.js
+// @updateURL https://github.com/maryasov/hwh/raw/refs/heads/main/HeroWarsHelperMod.meta.js
 // ==/UserScript==
 
 (function() {
