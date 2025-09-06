@@ -8508,7 +8508,7 @@ this.sendsMission = async function (param) {
                     // текст для списка лута missionItems
                     //const
                     pushReward(r.battleData.reward, true)
-                    console.log('BattleCalc reward', r.battleData.reward)
+                    //console.log('BattleCalc reward', r.battleData.reward)
 
 				const isSuccess = await countdownTimer(timer, `${I18N('MISSIONS_PASSED')}: ${param.count} ${rewardText(repeatItems, knownItems)}`, () => {
 					isStopSendMission = true;
