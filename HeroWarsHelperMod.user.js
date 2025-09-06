@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-07-03-00
+// @version			2.366.25-09-07-04-22
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -1055,6 +1055,12 @@ const checkboxes = {
 		get title() { return I18N('REPEAT_CAMPAIGN_TITLE'); },
 		default: false,
 	},
+	repeatMissionSearch: {
+		get label() { return 'Искать предметы'; },
+		cbox: null,
+		get title() { return 'Искать предметы'; },
+		default: false,
+	},
 	noOfferDonat: {
 		get label() { return I18N('DISABLE_DONAT'); },
 		cbox: null,
@@ -1572,6 +1578,7 @@ let isStopSendMission = false;
  * Идет повтор миссии
  */
 let isSendsMission = false;
+let missionItemSearch = ''
 let missionItems = {}
 let repeatItems = {}
 /**
@@ -2931,11 +2938,30 @@ async function checkChangeResponse(response) {
 				if (call.ident == callsIdent['brawl_startBattle'] ||
 					call.ident == callsIdent['bossAttack'] ||
 					call.ident == callsIdent['towerStartBattle'] ||
-					call.ident == callsIdent['missionStart'] ||
 					call.ident == callsIdent['invasion_bossStart']) {
 					battle = call.result.response;
-                      missionItems = {}
+
 				}
+                   if (call.ident == callsIdent['missionStart']) {
+                     missionItems = {}
+                     if (isChecked('repeatMissionSearch')) {
+                       const answer = await popup.confirm('Искать предмет', [
+                         {
+                           msg: 'Предмет',
+                           placeholder: 'что искать',
+                           isInput: true,
+                           default: ''
+                         },
+                         {
+                           msg: I18N('BTN_CANCEL'),
+                           result: false,
+                           isCancel: true
+                         },
+                       ]);
+                       missionItemSearch = answer
+                     }
+
+                   }
 				lastBattleInfo = battle;
 				if (call.ident == callsIdent['battleGetReplay'] && call.result.response.replay.type ===	"clan_raid") {
 					if (call?.result?.response?.replay?.result?.damage) {
