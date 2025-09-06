@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-07-04-39
+// @version			2.366.25-09-07-05-01
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2143,6 +2143,16 @@ async function checkChangeSend(sourceData, tempData) {
 			if (!artifactChestOpen) {
 				requestHistory[this.uniqid].calls[call.name] = call.ident;
 			}
+            if ((call.name == 'missionStart') &&
+              isCancalBattle) {
+              nameFuncEndBattle = call.name;
+              if (missionItemSearch) {
+                fixBattle(call.args.progress[0].attackers.heroes);
+                fixBattle(call.args.progress[0].defenders.heroes);
+                changeRequest = true;
+
+              }
+            }
 			/**
 			 * Cancellation of the battle in adventures, on VG and with minions of Asgard
 			 * Отмена боя в приключениях, на ВГ и с прислужниками Асгарда
