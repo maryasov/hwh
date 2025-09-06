@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-07-04-22
+// @version			2.366.25-09-07-04-39
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2943,6 +2943,7 @@ async function checkChangeResponse(response) {
 
 				}
                    if (call.ident == callsIdent['missionStart']) {
+                     battle = call.result.response;
                      missionItems = {}
                      if (isChecked('repeatMissionSearch')) {
                        const answer = await popup.confirm('Искать предмет', [
@@ -2959,6 +2960,9 @@ async function checkChangeResponse(response) {
                          },
                        ]);
                        missionItemSearch = answer
+                       if (answer) {
+                         isChange = true;
+                       }
                      }
 
                    }
