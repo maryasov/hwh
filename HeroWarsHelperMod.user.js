@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-07-06-19
+// @version			2.366.25-09-07-06-29
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2143,6 +2143,7 @@ async function checkChangeSend(sourceData, tempData) {
 			if (!artifactChestOpen) {
 				requestHistory[this.uniqid].calls[call.name] = call.ident;
 			}
+            console.log(call.name, call);
             if ((call.name == 'missionEnd') &&
               isCancalBattle) {
               nameFuncEndBattle = call.name;
