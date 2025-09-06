@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-07-00-01
+// @version			2.366.25-09-07-03-00
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -8510,7 +8510,8 @@ this.sendsMission = async function (param) {
                     pushReward(r.battleData.reward, true)
                     //console.log('BattleCalc reward', r.battleData.reward)
 
-				const isSuccess = await countdownTimer(timer, `${I18N('MISSIONS_PASSED')}: ${param.count} ${rewardText(repeatItems, knownItems)}`, () => {
+				const isSuccess = await countdownTimer(timer, `${I18N('MISSIONS_PASSED')}: ${param.count} ${rewardText(repeatItems, knownItems)}`, (e) => {
+                         console.log('stop', e)
 					isStopSendMission = true;
 				});
 				if (!isSuccess) {
