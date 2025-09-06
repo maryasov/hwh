@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-06-11-45
+// @version			2.366.25-09-06-12-11
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2843,12 +2843,13 @@ async function checkChangeResponse(response) {
 			 * Start of the battle for recalculation
 			 * Начало боя для прерасчета
 			 */
+               console.log('miss start', call.ident)
 			if (call.ident == callsIdent['clanWarAttack'] ||
 				call.ident == callsIdent['crossClanWar_startBattle'] ||
 				call.ident == callsIdent['bossAttack'] ||
 				call.ident == callsIdent['battleGetReplay'] ||
 				call.ident == callsIdent['brawl_startBattle'] ||
-				call.ident == callsIdent['adventure_startBattle'] ||
+				call.ident == callsIdent['missionStart'] ||
 				call.ident == callsIdent['adventureSolo_turnStartBattle'] ||
 				call.ident == callsIdent['invasion_bossStart'] ||
 				call.ident == callsIdent['titanArenaStartBattle'] ||
