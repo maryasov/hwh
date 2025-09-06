@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-06-14-44
+// @version			2.366.25-09-06-14-58
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -1573,6 +1573,7 @@ let isStopSendMission = false;
  */
 let isSendsMission = false;
 let missionItems = {}
+let repeatItems = {}
 /**
  * Data on the past mission
  *
@@ -2013,17 +2014,25 @@ XMLHttpRequest.prototype.send = async function (sourceData) {
 	}
 };
 
-const pushReward = (reward) => {
+const pushReward = (reward, rep = false) => {
   const oneReward = (key) => {
-    if (missionItems[key] === undefined) {
+    if (!rep && missionItems[key] === undefined) {
       missionItems[key] = {}
+    }
+    if (rep && repeatItems[key] === undefined) {
+      repeatItems[key] = {}
     }
     //results.forEach(e => {
     for (let k in reward[key]) {
       const c = reward[key][k]
       console.log(`iter ${key}`, k, c)
-      if (missionItems[key][k] === undefined) {missionItems[key][k] = 0}
-      missionItems[key][k] += c
+      if (rep) {
+        if (repeatItems[key][k] === undefined) {repeatItems[key][k] = 0}
+        repeatItems[key][k] += c
+      } else {
+        if (missionItems[key][k] === undefined) {missionItems[key][k] = 0}
+        missionItems[key][k] += c
+      }
     }
   }
   const ignoreKeys = ['experience', 'gold', 'heroXp']
@@ -2553,7 +2562,7 @@ async function checkChangeSend(sourceData, tempData) {
 						])) {
 						isStopSendMission = false;
 						isSendsMission = true;
-                        missionItems = {}
+                           repeatItems = {}
 						sendsMission(missionInfo);
 					}
 				}, 0);
@@ -2925,6 +2934,7 @@ async function checkChangeResponse(response) {
 					call.ident == callsIdent['missionStart'] ||
 					call.ident == callsIdent['invasion_bossStart']) {
 					battle = call.result.response;
+                      missionItems = {}
 				}
 				lastBattleInfo = battle;
 				if (call.ident == callsIdent['battleGetReplay'] && call.result.response.replay.type ===	"clan_raid") {
@@ -8450,7 +8460,7 @@ this.sendsMission = async function (param) {
 		isSendsMission = false;
 		console.log(I18N('STOPPED'));
 		setProgress('');
-		await popup.confirm(`${I18N('STOPPED')}<br>${rewardText(missionItems, knownItems)}${I18N('REPETITIONS')}: ${param.count}`, [{
+		await popup.confirm(`${I18N('STOPPED')}<br>${rewardText(repeatItems, knownItems)}${I18N('REPETITIONS')}: ${param.count}`, [{
 			msg: 'Ok',
 			result: true
 		}, ])
@@ -8477,7 +8487,7 @@ this.sendsMission = async function (param) {
 			isSendsMission = false;
 			console.log(e['error']);
 			setProgress('');
-			let msg = e['error'].name + ' ' + e['error'].description + `<br>${rewardText(missionItems, knownItems)}${I18N('REPETITIONS')}: ${param.count}`;
+			let msg = e['error'].name + ' ' + e['error'].description + `<br>${rewardText(repeatItems, knownItems)}${I18N('REPETITIONS')}: ${param.count}`;
 			await popup.confirm(msg, [
 				{msg: 'Ok', result: true},
 			])
@@ -8497,10 +8507,10 @@ this.sendsMission = async function (param) {
                     // TD вывод индикатора
                     // текст для списка лута missionItems
                     //const
-                    pushReward(r.battleData.reward)
+                    pushReward(r.battleData.reward, true)
                     console.log('BattleCalc reward', r.battleData.reward)
 
-				const isSuccess = await countdownTimer(timer, `${I18N('MISSIONS_PASSED')}: ${param.count} ${rewardText(missionItems, knownItems)}`, () => {
+				const isSuccess = await countdownTimer(timer, `${I18N('MISSIONS_PASSED')}: ${param.count} ${rewardText(repeatItems, knownItems)}`, () => {
 					isStopSendMission = true;
 				});
 				if (!isSuccess) {
