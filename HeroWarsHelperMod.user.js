@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-06-14-58
+// @version			2.366.25-09-06-15-00
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2048,7 +2048,7 @@ let knownItems = [];
 
 (async () => {
   knownItems = await fetch('https://raw.githubusercontent.com/maryasov/hwh/refs/heads/main/items.json').then(e => e.json())
-})
+})();
 
 const rewardText = (items, known) => {
   const rewardLabels = {
