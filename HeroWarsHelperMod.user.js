@@ -2036,6 +2036,9 @@ const pushReward = (reward) => {
 }
 
 let knownItems = []
+(async () => {
+  knownItems = await fetch('https://raw.githubusercontent.com/maryasov/hwh/refs/heads/main/items.json').then(e => e.json())
+})
 
 const rewardText = (items, known) => {
   const rewardLabels = {
@@ -2901,7 +2904,7 @@ async function checkChangeResponse(response) {
 			 * Start of the battle for recalculation
 			 * Начало боя для прерасчета
 			 */
-               console.log('miss start', call.ident)
+               // console.log('miss start', call.ident)
 			if (call.ident == callsIdent['clanWarAttack'] ||
 				call.ident == callsIdent['crossClanWar_startBattle'] ||
 				call.ident == callsIdent['bossAttack'] ||
