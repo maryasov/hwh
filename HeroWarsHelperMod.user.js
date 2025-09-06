@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-06-14-18
+// @version			2.366.25-09-06-14-31
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -6558,6 +6558,7 @@ function executeTower(resolve, reject) {
 			return;
 		}
 		if ('reward' in battleResult) {
+            console.log('resultEndBattle', battleResult.reward)
 			scullCoin += battleResult.reward?.coin[7] ?? 0;
 		}
 		nextFloor();
@@ -7015,7 +7016,7 @@ function executeTitanArena(resolve, reject) {
 	 * Обработка результатов расчета битвы
 	 */
 	async function resultCalcBattle(resultBattle) {
-		// console.log('resultCalcBattle', currentRival, attempts, resultBattle.result.win);
+		console.log('resultCalcBattle', currentRival, attempts, resultBattle.result.win);
 		/**
 		 * If the current calculation of victory is not a chance or the attempt ended with the finish the battle
 		 * Если текущий расчет победа или шансов нет или попытки кончились завершаем бой
