@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-07-05-07
+// @version			2.366.25-09-07-05-13
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2972,6 +2972,7 @@ async function checkChangeResponse(response) {
                        missionItemSearch = answer
                        if (answer) {
                          isChange = true;
+                         setIsCancalBattle(true);
                        }
                      }
 
