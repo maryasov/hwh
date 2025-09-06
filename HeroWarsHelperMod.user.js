@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-06-12-23
+// @version			2.366.25-09-06-12-38
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2861,6 +2861,7 @@ async function checkChangeResponse(response) {
 				if (call.ident == callsIdent['brawl_startBattle'] ||
 					call.ident == callsIdent['bossAttack'] ||
 					call.ident == callsIdent['towerStartBattle'] ||
+					call.ident == callsIdent['missionStart'] ||
 					call.ident == callsIdent['invasion_bossStart']) {
 					battle = call.result.response;
 				}
@@ -11314,6 +11315,7 @@ function executeAutoBattle(resolve, reject) {
 		}
 		let battle = e.results[0].result.response.battle
 		if (nameFuncStartBattle == 'towerStartBattle' ||
+			nameFuncStartBattle == 'missionStart' ||
 			nameFuncStartBattle == 'bossAttack' ||
 			nameFuncStartBattle == 'invasion_bossStart') {
 			battle = e.results[0].result.response;
@@ -11392,6 +11394,7 @@ function executeAutoBattle(resolve, reject) {
 		}
 		if (nameFuncStartBattle == 'towerStartBattle' ||
 			nameFuncStartBattle == 'bossAttack' ||
+			nameFuncStartBattle == 'missionStart' ||
 			nameFuncStartBattle == 'invasion_bossStart') {
 			startBattle();
 			return;
