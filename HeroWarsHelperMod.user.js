@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-06-12-38
+// @version			2.366.25-09-06-12-42
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2351,6 +2351,7 @@ async function checkChangeSend(sourceData, tempData) {
 			) {
 				nameFuncStartBattle = call.name;
 				lastBattleArg = call.args;
+                    console.log('HWHData', HWHData)
 
 				if (call.name == 'invasion_bossStart') {
 					const { invasionInfo } = HWHData;
