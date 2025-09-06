@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-06-15-06
+// @version			2.366.25-09-06-15-24
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2025,7 +2025,7 @@ const pushReward = (reward, rep = false) => {
     //results.forEach(e => {
     for (let k in reward[key]) {
       const c = reward[key][k]
-      console.log(`iter ${key}`, k, c)
+      //console.log(`iter ${key}`, k, c)
       if (rep) {
         if (repeatItems[key][k] === undefined) {repeatItems[key][k] = 0}
         repeatItems[key][k] += c
