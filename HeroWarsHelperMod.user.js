@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-06-12-11
+// @version			2.366.25-09-06-12-23
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2342,6 +2342,7 @@ async function checkChangeSend(sourceData, tempData) {
 			if (
 				call.name == 'clanWarAttack' ||
 				call.name == 'crossClanWar_startBattle' ||
+				call.name == 'missionStart' ||
 				call.name == 'adventure_turnStartBattle' ||
 				call.name == 'adventureSolo_turnStartBattle' ||
 				call.name == 'bossAttack' ||
