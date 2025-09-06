@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-06-12-42
+// @version			2.366.25-09-06-12-55
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2903,8 +2903,9 @@ async function checkChangeResponse(response) {
 					preCalcBattle.progress = [{ attackers: { input: ['auto', 0, 0, 'auto', 0, 0] } }];
 				}
 				for (let i = 0; i < countTestBattle; i++) {
-					actions.push(getBattleInfo(preCalcBattle, true));
-				}
+                      actions.push(getBattleInfo(preCalcBattle, true));
+                    }
+                    console.log('preCalcBattle', preCalcBattle)
 				Promise.all(actions)
 					.then(e => {
 						e = e.map(n => ({win: n.result.win, time: n.battleTime}));
