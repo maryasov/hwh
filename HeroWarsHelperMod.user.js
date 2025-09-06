@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-06-12-55
+// @version			2.366.25-09-06-14-18
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2012,6 +2012,62 @@ XMLHttpRequest.prototype.send = async function (sourceData) {
 
 	}
 };
+
+const pushReward = (reward) => {
+  const oneReward = (key) => {
+    if (missionItems[key] === undefined) {
+      missionItems[key] = {}
+    }
+    //results.forEach(e => {
+    for (let k in reward[key]) {
+      const c = reward[key][k]
+      console.log(`iter ${key}`, k, c)
+      if (missionItems[key][k] === undefined) {missionItems[key][k] = 0}
+      missionItems[key][k] += c
+    }
+  }
+  const ignoreKeys = ['experience', 'gold', 'heroXp']
+  for (let k in reward) {
+    if (!ignoreKeys.includes(k) && reward && reward[k]) {
+      //console.log('BattleCalc reward fragment', reward.fragmentGear)
+      oneReward(k)
+    }
+  }
+}
+
+let knownItems = []
+
+const rewardText = (items, known) => {
+  const rewardLabels = {
+    scroll: 'Рецепт',
+    gear: 'G',
+    consumable: 'Расх',
+    fragmentGear: 'Фраг(G)',
+    fragmentScroll: 'Фраг(Р)',
+  }
+  let text = ''
+  console.log('knownItems', known)
+  const ignoreItemsKeys = ['gear', 'consumable', 'fragmentHero']
+  for (let k in items) {
+    if (!ignoreItemsKeys.includes(k) && items[k]) {
+      //console.log('BattleCalc reward fragment', r.battleData.reward.fragmentGear)
+      const viewItems = {}
+      for (let ki in items[k]) {
+        if (known[ki]) {
+          viewItems[known[ki]] = items[k][ki]
+        } else {
+          viewItems[ki] = items[k][ki]
+        }
+      }
+      let rewLabel = k
+      if (rewardLabels[k]) {rewLabel = rewardLabels[k]}
+      console.log(`rewardText ${rewLabel}`, viewItems)
+      text += `<br>${rewLabel}: ` + JSON.stringify(viewItems)
+    }
+  }
+  return text + '<br>'
+}
+
 /**
  * Processing and substitution of outgoing data
  *
@@ -2351,7 +2407,6 @@ async function checkChangeSend(sourceData, tempData) {
 			) {
 				nameFuncStartBattle = call.name;
 				lastBattleArg = call.args;
-                    console.log('HWHData', HWHData)
 
 				if (call.name == 'invasion_bossStart') {
 					const { invasionInfo } = HWHData;
@@ -2794,6 +2849,7 @@ async function checkChangeResponse(response) {
 					if (answer) {
 						lastAnswer = answer;
 						console.log(answer);
+						console.log(answer.answer[0]);
 						showText = `${I18N('ANSWER_KNOWN')}: ${answer}`;
 					} else {
 						showText = I18N('ANSWER_NOT_KNOWN');
@@ -2905,7 +2961,9 @@ async function checkChangeResponse(response) {
 				for (let i = 0; i < countTestBattle; i++) {
                       actions.push(getBattleInfo(preCalcBattle, true));
                     }
+                    pushReward(preCalcBattle.reward)
                     console.log('preCalcBattle', preCalcBattle)
+                    console.log('missionItems', rewardText(missionItems, knownItems))
 				Promise.all(actions)
 					.then(e => {
 						e = e.map(n => ({win: n.result.win, time: n.battleTime}));
@@ -8382,54 +8440,12 @@ function questAllFarm() {
  * isSendsMission = true;
  **/
 this.sendsMission = async function (param) {
-    const knownItems = await fetch('https://raw.githubusercontent.com/maryasov/hwh/refs/heads/main/items.json').then(e => e.json())
-    const rewardLabels = {
-      scroll: 'Рецепт',
-      gear: 'G',
-      consumable: 'Расх',
-      fragmentGear: 'Фраг(G)',
-      fragmentScroll: 'Фраг(Р)',
-    }
-    const rewardText = () => {
-        let text = ''
-        //if (missionItems['gear']) {
-        //    console.log('rewardText gear', missionItems['gear'])
-        //    text += '<br>gear: ' + JSON.stringify(missionItems['gear'])
-        //}
-        console.log('knownItems', knownItems)
-        const ignoreItemsKeys = ['gear', 'consumable', 'fragmentHero']
-        for (let k in missionItems) {
-            if (!ignoreItemsKeys.includes(k) && missionItems[k]) {
-                //console.log('BattleCalc reward fragment', r.battleData.reward.fragmentGear)
-                const viewItems = {}
-                for (let ki in missionItems[k]) {
-                    if (knownItems[ki]) {
-                        viewItems[knownItems[ki]] = missionItems[k][ki]
-                    } else {
-                        viewItems[ki] = missionItems[k][ki]
-                    }
-                }
-                let rewLabel = k
-                if (rewardLabels[k]) {rewLabel = rewardLabels[k]}
-                console.log(`rewardText ${rewLabel}`, viewItems)
-                text += `<br>${rewLabel}: ` + JSON.stringify(viewItems)
-            }
-        }
-//         if (missionItems['fragmentGear']) {
-//             console.log('rewardText fragmentGear', missionItems['fragmentGear'])
-//             text += '<br>fragment: ' + JSON.stringify(missionItems['fragmentGear'])
-//         }
-//         if (missionItems['consumable']) {
-//             console.log('rewardText consumable', missionItems['consumable'])
-//             text += '<br>consumable: ' + JSON.stringify(missionItems['consumable'])
-//         }
-       return text + '<br>'
-    }
+    knownItems = await fetch('https://raw.githubusercontent.com/maryasov/hwh/refs/heads/main/items.json').then(e => e.json())
 	async function stopMission() {
 		isSendsMission = false;
 		console.log(I18N('STOPPED'));
 		setProgress('');
-		await popup.confirm(`${I18N('STOPPED')}<br>${rewardText()}${I18N('REPETITIONS')}: ${param.count}`, [{
+		await popup.confirm(`${I18N('STOPPED')}<br>${rewardText(missionItems, knownItems)}${I18N('REPETITIONS')}: ${param.count}`, [{
 			msg: 'Ok',
 			result: true
 		}, ])
@@ -8456,7 +8472,7 @@ this.sendsMission = async function (param) {
 			isSendsMission = false;
 			console.log(e['error']);
 			setProgress('');
-			let msg = e['error'].name + ' ' + e['error'].description + `<br>${rewardText()}${I18N('REPETITIONS')}: ${param.count}`;
+			let msg = e['error'].name + ' ' + e['error'].description + `<br>${rewardText(missionItems, knownItems)}${I18N('REPETITIONS')}: ${param.count}`;
 			await popup.confirm(msg, [
 				{msg: 'Ok', result: true},
 			])
@@ -8473,43 +8489,13 @@ this.sendsMission = async function (param) {
 			const period = Math.ceil((Date.now() - lastMissionBattleStart) / 1000);
 			if (period < timer) {
 				timer = timer - period;
-                // TD вывод индикатора
-                // текст для списка лута missionItems
-                //const
-                const oneReward = (key) => {
-                    if (missionItems[key] === undefined) {
-                        missionItems[key] = {}
-                    }
-                    //results.forEach(e => {
-                    for (let k in r.battleData.reward[key]) {
-                        const c = r.battleData.reward[key][k]
-                        console.log(`iter ${key}`, k, c)
-                        if (missionItems[key][k] === undefined) {missionItems[key][k] = 0}
-                        missionItems[key][k] += c
-                    }
-                }
-                const ignoreKeys = ['experience', 'gold', 'heroXp']
-                for (let k in r.battleData.reward) {
-                    if (!ignoreKeys.includes(k) && r.battleData.reward && r.battleData.reward[k]) {
-                    //console.log('BattleCalc reward fragment', r.battleData.reward.fragmentGear)
-                        oneReward(k)
-                    }
-                }
-//                 if (r.battleData.reward && r.battleData.reward.fragmentGear) {
-//                     //console.log('BattleCalc reward fragment', r.battleData.reward.fragmentGear)
-//                     oneReward('fragmentGear')
-//                 }
-//                 if (r.battleData.reward && r.battleData.reward.gear) {
-//                     //console.log('BattleCalc reward gear', r.battleData.reward.gear)
-//                     oneReward('gear')
-//                 }
-//                 if (r.battleData.reward && r.battleData.reward.consumable) {
-//                     //console.log('BattleCalc reward consumable', r.battleData.reward.consumable)
-//                     oneReward('consumable')
-//                 }
-                console.log('BattleCalc reward', r.battleData.reward)
+                    // TD вывод индикатора
+                    // текст для списка лута missionItems
+                    //const
+                    pushReward(r.battleData.reward)
+                    console.log('BattleCalc reward', r.battleData.reward)
 
-				const isSuccess = await countdownTimer(timer, `${I18N('MISSIONS_PASSED')}: ${param.count} ${rewardText()}`, () => {
+				const isSuccess = await countdownTimer(timer, `${I18N('MISSIONS_PASSED')}: ${param.count} ${rewardText(missionItems, knownItems)}`, () => {
 					isStopSendMission = true;
 				});
 				if (!isSuccess) {
