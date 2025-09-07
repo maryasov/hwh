@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-07-07-03
+// @version			2.366.25-09-07-07-19
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -1578,6 +1578,7 @@ let isStopSendMission = false;
  * Идет повтор миссии
  */
 let isSendsMission = false;
+let savedStart = null
 let missionItemSearch = ''
 let missionItems = {}
 let repeatItems = {}
@@ -2275,9 +2276,10 @@ async function checkChangeSend(sourceData, tempData) {
 							// setTimeout(bossBattle, 1000);
 						}
 					}
-				} else if ((call.args.result.stars < 3 && call.name == 'towerEndBattle') || (call.name == 'missionEnd' && missionItemSearch)) {
+				} else if (call.args.result.stars < 3 && call.name == 'towerEndBattle') {
 					resultPopup = await showMsg(I18N('LOST_HEROES'), I18N('BTN_OK'), I18N('BTN_CANCEL'), I18N('BTN_AUTO'));
 					if (resultPopup) {
+
 						fixBattle(call.args.progress[0].attackers.heroes);
 						fixBattle(call.args.progress[0].defenders.heroes);
 						changeRequest = true;
@@ -2540,7 +2542,7 @@ async function checkChangeSend(sourceData, tempData) {
 				freebieCheckInfo = call;
 			}
 			/** missionTimer */
-			if (call.name == 'missionEnd' && missionBattle) {
+			if (call.name == 'missionEnd' && (missionBattle || missionItemSearch)) {
 				let startTimer = false;
 				if (!call.args.result.win) {
 					startTimer = await popup.confirm(I18N('DEFEAT_TURN_TIMER'), [
@@ -2979,6 +2981,7 @@ async function checkChangeResponse(response) {
                        if (answer) {
                          isChange = true;
                          setIsCancalBattle(true);
+                         savedStart = call
                        }
                      }
 
