@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-07-07-19
+// @version			2.366.25-09-07-07-24
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2542,7 +2542,7 @@ async function checkChangeSend(sourceData, tempData) {
 				freebieCheckInfo = call;
 			}
 			/** missionTimer */
-			if (call.name == 'missionEnd' && (missionBattle || missionItemSearch)) {
+			if (call.name == 'missionEnd' && missionBattle) {
 				let startTimer = false;
 				if (!call.args.result.win) {
 					startTimer = await popup.confirm(I18N('DEFEAT_TURN_TIMER'), [
@@ -2552,6 +2552,29 @@ async function checkChangeSend(sourceData, tempData) {
 				}
 
 				if (call.args.result.win || startTimer) {
+					missionBattle.progress = call.args.progress;
+					missionBattle.result = call.args.result;
+					const result = await Calc(missionBattle);
+
+					let timer = result.battleTimer + addBattleTimer;
+					const period = Math.ceil((Date.now() - lastMissionBattleStart) / 1000);
+					if (period < timer) {
+						timer = timer - period;
+						await countdownTimer(timer);
+					}
+					missionBattle = null;
+				} else {
+					this.errorRequest = true;
+				}
+			}
+			if (call.name == 'missionEnd' && missionItemSearch) {
+				let startTimer = false;
+                 startTimer = await popup.confirm(I18N('DEFEAT_TURN_TIMER'), [
+                   { msg: I18N('BTN_NO'), result: false },
+                   { msg: I18N('BTN_YES'), result: true },
+                 ]);
+
+				if (startTimer) {
 					missionBattle.progress = call.args.progress;
 					missionBattle.result = call.args.result;
 					const result = await Calc(missionBattle);
