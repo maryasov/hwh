@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-07-07-24
+// @version			2.366.25-09-07-07-56
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2144,20 +2144,20 @@ async function checkChangeSend(sourceData, tempData) {
 			if (!artifactChestOpen) {
 				requestHistory[this.uniqid].calls[call.name] = call.ident;
 			}
-            console.log(call.name, isCancalBattle, call);
-            if ((call.name == 'missionEnd') &&
-              isCancalBattle) {
-              nameFuncEndBattle = call.name;
-              resultPopup = await showMsg('test', I18N('BTN_OK'), I18N('BTN_CANCEL'), I18N('BTN_AUTO'));
-              if (resultPopup) {
-                fixBattle(call.args.progress[0].attackers.heroes);
-                fixBattle(call.args.progress[0].defenders.heroes);
-                changeRequest = true;
-                if (resultPopup > 1) {
-                  this.onReadySuccess = testAutoBattle;
-                }
-              }
-            }
+            // console.log(call.name, isCancalBattle, call);
+            // if ((call.name == 'missionEnd') &&
+            //   isCancalBattle) {
+            //   nameFuncEndBattle = call.name;
+            //   resultPopup = await showMsg('test', I18N('BTN_OK'), I18N('BTN_CANCEL'), I18N('BTN_AUTO'));
+            //   if (resultPopup) {
+            //     fixBattle(call.args.progress[0].attackers.heroes);
+            //     fixBattle(call.args.progress[0].defenders.heroes);
+            //     changeRequest = true;
+            //     if (resultPopup > 1) {
+            //       this.onReadySuccess = testAutoBattle;
+            //     }
+            //   }
+            // }
 			/**
 			 * Cancellation of the battle in adventures, on VG and with minions of Asgard
 			 * Отмена боя в приключениях, на ВГ и с прислужниками Асгарда
@@ -2173,7 +2173,6 @@ async function checkChangeSend(sourceData, tempData) {
 				call.name == 'invasion_bossEnd' ||
 				call.name == 'titanArenaEndBattle' ||
 				call.name == 'bossEndBattle' ||
-				call.name == 'missionEnd' ||
 				call.name == 'clanRaid_endNodeBattle') &&
 				isCancalBattle) {
 				nameFuncEndBattle = call.name;
@@ -2567,29 +2566,29 @@ async function checkChangeSend(sourceData, tempData) {
 					this.errorRequest = true;
 				}
 			}
-			if (call.name == 'missionEnd' && missionItemSearch) {
-				let startTimer = false;
-                 startTimer = await popup.confirm(I18N('DEFEAT_TURN_TIMER'), [
-                   { msg: I18N('BTN_NO'), result: false },
-                   { msg: I18N('BTN_YES'), result: true },
-                 ]);
-
-				if (startTimer) {
-					missionBattle.progress = call.args.progress;
-					missionBattle.result = call.args.result;
-					const result = await Calc(missionBattle);
-
-					let timer = result.battleTimer + addBattleTimer;
-					const period = Math.ceil((Date.now() - lastMissionBattleStart) / 1000);
-					if (period < timer) {
-						timer = timer - period;
-						await countdownTimer(timer);
-					}
-					missionBattle = null;
-				} else {
-					this.errorRequest = true;
-				}
-			}
+			// if (call.name == 'missionEnd' && missionItemSearch) {
+			// 	let startTimer = false;
+               //   startTimer = await popup.confirm(I18N('DEFEAT_TURN_TIMER'), [
+               //     { msg: I18N('BTN_NO'), result: false },
+               //     { msg: I18N('BTN_YES'), result: true },
+               //   ]);
+               //
+			// 	if (startTimer) {
+			// 		missionBattle.progress = call.args.progress;
+			// 		missionBattle.result = call.args.result;
+			// 		const result = await Calc(missionBattle);
+               //
+			// 		let timer = result.battleTimer + addBattleTimer;
+			// 		const period = Math.ceil((Date.now() - lastMissionBattleStart) / 1000);
+			// 		if (period < timer) {
+			// 			timer = timer - period;
+			// 			await countdownTimer(timer);
+			// 		}
+			// 		missionBattle = null;
+			// 	} else {
+			// 		this.errorRequest = true;
+			// 	}
+			// }
 			/**
 			 * Getting mission data for auto-repeat
 			 * Получение данных миссии для автоповтора
@@ -2986,27 +2985,27 @@ async function checkChangeResponse(response) {
                      console.log('missionStart call', call)
                      battle = call.result.response;
                      missionItems = {}
-                     if (isChecked('repeatMissionSearch')) {
-                       const answer = await popup.confirm('Искать предмет', [
-                         {
-                           msg: 'Предмет',
-                           placeholder: 'что искать',
-                           isInput: true,
-                           default: ''
-                         },
-                         {
-                           msg: I18N('BTN_CANCEL'),
-                           result: false,
-                           isCancel: true
-                         },
-                       ]);
-                       missionItemSearch = answer
-                       if (answer) {
-                         isChange = true;
-                         setIsCancalBattle(true);
-                         savedStart = call
-                       }
-                     }
+                     // if (isChecked('repeatMissionSearch')) {
+                     //   const answer = await popup.confirm('Искать предмет', [
+                     //     {
+                     //       msg: 'Предмет',
+                     //       placeholder: 'что искать',
+                     //       isInput: true,
+                     //       default: ''
+                     //     },
+                     //     {
+                     //       msg: I18N('BTN_CANCEL'),
+                     //       result: false,
+                     //       isCancel: true
+                     //     },
+                     //   ]);
+                     //   missionItemSearch = answer
+                     //   if (answer) {
+                     //     isChange = true;
+                     //     setIsCancalBattle(true);
+                     //     savedStart = call
+                     //   }
+                     // }
 
                    }
 				lastBattleInfo = battle;
