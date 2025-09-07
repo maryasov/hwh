@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-07-06-49
+// @version			2.366.25-09-07-07-03
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2172,6 +2172,7 @@ async function checkChangeSend(sourceData, tempData) {
 				call.name == 'invasion_bossEnd' ||
 				call.name == 'titanArenaEndBattle' ||
 				call.name == 'bossEndBattle' ||
+				call.name == 'missionEnd' ||
 				call.name == 'clanRaid_endNodeBattle') &&
 				isCancalBattle) {
 				nameFuncEndBattle = call.name;
@@ -2274,7 +2275,7 @@ async function checkChangeSend(sourceData, tempData) {
 							// setTimeout(bossBattle, 1000);
 						}
 					}
-				} else if (call.args.result.stars < 3 && call.name == 'towerEndBattle') {
+				} else if ((call.args.result.stars < 3 && call.name == 'towerEndBattle') || (call.name == 'missionEnd' && missionItemSearch)) {
 					resultPopup = await showMsg(I18N('LOST_HEROES'), I18N('BTN_OK'), I18N('BTN_CANCEL'), I18N('BTN_AUTO'));
 					if (resultPopup) {
 						fixBattle(call.args.progress[0].attackers.heroes);
