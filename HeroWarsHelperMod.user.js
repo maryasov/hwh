@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.369.25-09-28-06-30
+// @version			2.369.25-09-28-06-33
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -8612,6 +8612,7 @@ this.sendsMission = async function (param) {
 			 */
 			SendRequest(JSON.stringify(missionEndCall), async (e) => {
 				if (e['error']) {
+                         console.trace('missionEndCall e')
 					isSendsMission = false;
 					console.log(e['error'], missionItems);
 					setProgress('');
@@ -8623,6 +8624,7 @@ this.sendsMission = async function (param) {
 				}
 				r = e.results[0].result.response;
 				if (r['error']) {
+                         console.trace('missionEndCall r')
 					isSendsMission = false;
 					console.log(r['error']);
 					setProgress('');
