@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.366.25-09-07-07-56
+// @version			2.368.25-09-27-19-07
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -1633,6 +1633,7 @@ const invasionDataPacks = {
 	280: { buff: 25, pet: 6005, heroes: [55, 63, 48, 52, 47], favor: { 47: 6003, 48: 6005, 52: 6006, 55: 6007, 63: 6009 }, timer: 39.84937499999998 },
 	290: { buff: 5, pet: 6005, heroes: [46, 55, 63, 48, 52], favor: { 46: 6006, 48: 6005, 52: 6003, 55: 6005, 63: 6003 }, timer: 20.053711007235812 },
 	300: { buff: 35, pet: 6005, heroes: [55, 58, 63, 43, 51], favor: { 43: 6006, 51: 6006, 55: 6005, 58: 6005, 63: 6000 }, timer: 40.13671886177282 },
+	//300: { buff: 70, pet: 6005, heroes: [55, 58, 63, 48, 51], favor: {48: 6005, 51: 6006, 55: 6007, 58: 6008, 63: 6009}, timer: 54.755859550678494 }
 };
 /**
  * The name of the function of the beginning of the battle
@@ -1743,14 +1744,13 @@ let clanDominationGetInfo = null;
  * @param {*} text copied text // копируемый текст
  */
 function copyText(text) {
-	let copyTextarea = document.createElement("textarea");
+	const copyTextarea = document.createElement("textarea");
 	copyTextarea.style.opacity = "0";
 	copyTextarea.textContent = text;
 	document.body.appendChild(copyTextarea);
 	copyTextarea.select();
 	document.execCommand("copy");
 	document.body.removeChild(copyTextarea);
-	delete copyTextarea;
 }
 /**
  * Returns the history of requests
@@ -2184,7 +2184,7 @@ async function checkChangeSend(sourceData, tempData) {
 					call.name == 'epicBrawl_endBattle' ||
 					//call.name == 'clanWarEndBattle' ||
 					call.name == 'adventure_endBattle' ||
-					call.name == 'titanArenaEndBattle' ||
+					// call.name == 'titanArenaEndBattle' ||
 					call.name == 'bossEndBattle' ||
 					call.name == 'adventureSolo_endBattle') &&
 					lastBattleInfo) {
@@ -2222,7 +2222,6 @@ async function checkChangeSend(sourceData, tempData) {
 					}
 				}
 
-				/*
 				if (isChecked('tryFixIt_v2') && !call.args.result.win && call.name == 'invasion_bossEnd' && lastBattleInfo) {
 					setProgress(I18N('LETS_FIX'), false);
 					const cloneBattle = structuredClone(lastBattleInfo);
@@ -2237,7 +2236,7 @@ async function checkChangeSend(sourceData, tempData) {
 						changeRequest = true;
 					}
 					setProgress(msgResult, false, hideProgress);
-					if (lastBattleInfo.seed === 8008) {
+					if (lastBattleInfo.seed === 8888) {
 						let timer = result.battleTimer;
 						const period = Math.ceil((Date.now() - lastBossBattleStart) / 1000);
 						console.log(timer, period);
@@ -2248,13 +2247,13 @@ async function checkChangeSend(sourceData, tempData) {
 						}
 					}
 				}
-				*/
 
 				if (!call.args.result.win) {
 					let resultPopup = false;
 					if (call.name == 'adventure_endBattle' ||
 						call.name == 'invasion_bossEnd' ||
 						call.name == 'bossEndBattle' ||
+						call.name == 'titanArenaEndBattle' ||
 						call.name == 'adventureSolo_endBattle') {
 						resultPopup = await showMsgs(I18N('MSG_HAVE_BEEN_DEFEATED'), I18N('BTN_OK'), I18N('BTN_CANCEL'), I18N('BTN_AUTO'));
 					} else if (call.name == 'clanWarEndBattle' ||
@@ -7109,6 +7108,7 @@ function executeTitanArena(resolve, reject) {
 		 */
 		if (resultBattle.result.win || !attempts) {
 			let { progress, result } = resultBattle;
+			/*
 			if (!resultBattle.result.win && isChecked('tryFixIt_v2')) {
 				const bFix = new BestOrWinFixBattle(resultBattle.battleData);
 				bFix.isGetTimer = false;
@@ -7119,6 +7119,7 @@ function executeTitanArena(resolve, reject) {
 					result = resultFix.result;
 				}
 			}
+			*/
 			titanArenaEndBattle({
 				progress,
 				result,
@@ -8613,7 +8614,7 @@ this.sendsMission = async function (param) {
 					isSendsMission = false;
 					console.log(e['error'], missionItems);
 					setProgress('');
-					let msg = e['error'].name + ' ' + e['error'].description + `<br>${I18N('REPETITIONS')}:%% ${param.count}`;
+					let msg = e['error'].name + ' ' + e['error'].description + `<br>${I18N('REPETITIONS')}: ${param.count}`;
 					await popup.confirm(msg, [
 						{msg: 'Ok', result: true},
 					])
@@ -9331,27 +9332,7 @@ async function autoRaidAdventure() {
 
 /** Вывести всю клановую статистику в консоль браузера */
 async function clanStatistic() {
-	const copy = function (text) {
-		const copyTextarea = document.createElement("textarea");
-		copyTextarea.style.opacity = "0";
-		copyTextarea.textContent = text;
-		document.body.appendChild(copyTextarea);
-		copyTextarea.select();
-		document.execCommand("copy");
-		document.body.removeChild(copyTextarea);
-		delete copyTextarea;
-	}
-	const calls = [
-		{ name: "clanGetInfo", args: {}, ident: "clanGetInfo" },
-		{ name: "clanGetWeeklyStat", args: {}, ident: "clanGetWeeklyStat" },
-		{ name: "clanGetLog", args: {}, ident: "clanGetLog" },
-	];
-
-	const result = await Send(JSON.stringify({ calls }));
-
-	const dataClanInfo = result.results[0].result.response;
-	const dataClanStat = result.results[1].result.response;
-	const dataClanLog = result.results[2].result.response;
+	const [dataClanInfo, dataClanStat, dataClanLog] = await Caller.send(['clanGetInfo', 'clanGetWeeklyStat', 'clanGetLog']);
 
 	const membersStat = {};
 	for (let i = 0; i < dataClanStat.stat.length; i++) {
@@ -9387,7 +9368,7 @@ async function clanStatistic() {
 	}
 	const info = infoArr.sort((a, b) => (b[2] - a[2])).map((e) => e.join('\t')).join('\n');
 	console.log(info);
-	copy(info);
+	copyText(info);
 	setProgress(I18N('CLAN_STAT_COPY'), true);
 }
 
