@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.369.25-09-28-06-06
+// @version			2.369.25-09-28-06-24
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2102,6 +2102,7 @@ async function checkChangeSend(sourceData, tempData) {
 		 * Функция заменяющая данные боя на неверные для отмены боя
 		 */
 		const fixBattle = function (heroes) {
+                console.trace('fix')
 			for (const ids in heroes) {
 				hero = heroes[ids];
 				hero.energy = random(1, 999);
