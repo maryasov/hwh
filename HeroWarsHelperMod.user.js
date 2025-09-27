@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.369.25-09-28-05-51
+// @version			2.369.25-09-28-06-06
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2433,7 +2433,7 @@ async function checkChangeSend(sourceData, tempData) {
 			if (
 				call.name == 'clanWarAttack' ||
 				call.name == 'crossClanWar_startBattle' ||
-				call.name == 'missionStart' ||
+				// call.name == 'missionStart' ||
 				call.name == 'adventure_turnStartBattle' ||
 				call.name == 'adventureSolo_turnStartBattle' ||
 				call.name == 'bossAttack' ||
@@ -2607,7 +2607,7 @@ async function checkChangeSend(sourceData, tempData) {
 						])) {
 						isStopSendMission = false;
 						isSendsMission = true;
-                           repeatItems = {}
+                              repeatItems = {}
 						sendsMission(missionInfo);
 					}
 				}, 0);
@@ -2965,7 +2965,7 @@ async function checkChangeResponse(response) {
 				call.ident == callsIdent['bossAttack'] ||
 				call.ident == callsIdent['battleGetReplay'] ||
 				call.ident == callsIdent['brawl_startBattle'] ||
-				call.ident == callsIdent['missionStart'] ||
+				// call.ident == callsIdent['missionStart'] ||
 				call.ident == callsIdent['adventureSolo_turnStartBattle'] ||
 				call.ident == callsIdent['invasion_bossStart'] ||
 				call.ident == callsIdent['titanArenaStartBattle'] ||
@@ -2980,7 +2980,7 @@ async function checkChangeResponse(response) {
 					battle = call.result.response;
 
 				}
-                   if (call.ident == callsIdent['missionStart']) {
+                   if (false && call.ident == callsIdent['missionStart']) {
                      console.log('missionStart call', call)
                      battle = call.result.response;
                      missionItems = {}
@@ -11372,7 +11372,7 @@ function executeAutoBattle(resolve, reject) {
 		}
 		let battle = e.results[0].result.response.battle
 		if (nameFuncStartBattle == 'towerStartBattle' ||
-			//nameFuncStartBattle == 'missionStart' ||
+			nameFuncStartBattle == 'missionStart' ||
 			nameFuncStartBattle == 'bossAttack' ||
 			nameFuncStartBattle == 'invasion_bossStart') {
 			battle = e.results[0].result.response;
@@ -11451,7 +11451,7 @@ function executeAutoBattle(resolve, reject) {
 		}
 		if (nameFuncStartBattle == 'towerStartBattle' ||
 			nameFuncStartBattle == 'bossAttack' ||
-			//nameFuncStartBattle == 'missionStart' ||
+			nameFuncStartBattle == 'missionStart' ||
 			nameFuncStartBattle == 'invasion_bossStart') {
 			startBattle();
 			return;
