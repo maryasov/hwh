@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.369.25-09-28-07-05
+// @version			2.369.25-09-28-07-12
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -8530,6 +8530,7 @@ function questAllFarm() {
  **/
 this.sendsMission = async function (param) {
     knownItems = await fetch('https://raw.githubusercontent.com/maryasov/hwh/refs/heads/main/items.json').then(e => e.json())
+     console.log('sendsMission', param)
 	async function stopMission() {
 		isSendsMission = false;
 		console.log(I18N('STOPPED'));
