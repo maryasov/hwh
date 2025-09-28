@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.369.25-09-28-06-57
+// @version			2.369.25-09-28-07-05
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -8573,6 +8573,7 @@ this.sendsMission = async function (param) {
 		 * Расчет данных мисии
 		 */
 		BattleCalc(e.results[0].result.response, 'get_tower', async r => {
+               console.log('calc', r)
 			/** missionTimer */
 			let timer = getTimer(r.battleTime) + 5;
 			const period = Math.ceil((Date.now() - lastMissionBattleStart) / 1000);
