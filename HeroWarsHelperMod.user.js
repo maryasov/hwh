@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.369.25-09-28-07-19
+// @version			2.372.25-09-30-18-39
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -1213,9 +1213,9 @@ this.requestAnimationFrame = async function (e) {
 	oldRequestAnimationFrame(e);
 };
 /**
- * Button List
+ * List of main menu buttons
  *
- * Список кнопочек
+ * Список кнопочек основного меню
  */
 const buttons = {
 	getOutland: {
@@ -1227,80 +1227,9 @@ const buttons = {
 		get name() { return I18N('ACTIONS'); },
 		get title() { return I18N('ACTIONS_TITLE'); },
 		onClick: async function () {
-			const popupButtons = [
-				{
-					msg: I18N('OUTLAND'),
-					result: function () {
-						confShow(`${I18N('RUN_SCRIPT')} ${I18N('OUTLAND')}?`, getOutland);
-					},
-					get title() { return I18N('OUTLAND_TITLE'); },
-				},
-				{
-					msg: I18N('TOWER'),
-					result: function () {
-						confShow(`${I18N('RUN_SCRIPT')} ${I18N('TOWER')}?`, testTower);
-					},
-					get title() { return I18N('TOWER_TITLE'); },
-				},
-				{
-					msg: I18N('EXPEDITIONS'),
-					result: function () {
-						confShow(`${I18N('RUN_SCRIPT')} ${I18N('EXPEDITIONS')}?`, checkExpedition);
-					},
-					get title() { return I18N('EXPEDITIONS_TITLE'); },
-				},
-				{
-					msg: I18N('MINIONS'),
-					result: function () {
-						confShow(`${I18N('RUN_SCRIPT')} ${I18N('MINIONS')}?`, testRaidNodes);
-					},
-					get title() { return I18N('MINIONS_TITLE'); },
-				},
-				{
-					msg: I18N('ESTER_EGGS'),
-					result: function () {
-						confShow(`${I18N('RUN_SCRIPT')} ${I18N('ESTER_EGGS')}?`, offerFarmAllReward);
-					},
-					get title() { return I18N('ESTER_EGGS_TITLE'); },
-				},
-				{
-					msg: I18N('STORM'),
-					result: function () {
-						testAdventure('solo');
-					},
-					get title() { return I18N('STORM_TITLE'); },
-				},
-				{
-					msg: I18N('REWARDS'),
-					result: function () {
-						confShow(`${I18N('RUN_SCRIPT')} ${I18N('REWARDS')}?`, questAllFarm);
-					},
-					get title() { return I18N('REWARDS_TITLE'); },
-				},
-				{
-					msg: I18N('MAIL'),
-					result: function () {
-						confShow(`${I18N('RUN_SCRIPT')} ${I18N('MAIL')}?`, mailGetAll);
-					},
-					get title() { return I18N('MAIL_TITLE'); },
-				},
-				{
-					msg: I18N('SEER'),
-					result: function () {
-						confShow(`${I18N('RUN_SCRIPT')} ${I18N('SEER')}?`, rollAscension);
-					},
-					get title() { return I18N('SEER_TITLE'); },
-				},
-				/*
-				{
-					msg: I18N('NY_GIFTS'),
-					result: getGiftNewYear,
-					get title() { return I18N('NY_GIFTS_TITLE'); },
-				},
-				*/
-			];
-			popupButtons.push({ result: false, isClose: true });
-			const answer = await popup.confirm(`${I18N('CHOOSE_ACTION')}:`, popupButtons);
+			const { actionsPopupButtons } = HWHData;
+			actionsPopupButtons.push({ result: false, isClose: true });
+			const answer = await popup.confirm(`${I18N('CHOOSE_ACTION')}:`, actionsPopupButtons);
 			if (typeof answer === 'function') {
 				answer();
 			}
@@ -1310,114 +1239,9 @@ const buttons = {
 		get name() { return I18N('OTHERS'); },
 		get title() { return I18N('OTHERS_TITLE'); },
 		onClick: async function () {
-			const popupButtons = [
-				{
-					msg: I18N('GET_ENERGY'),
-					result: farmStamina,
-					get title() { return I18N('GET_ENERGY_TITLE'); },
-				},
-				{
-					msg: I18N('ITEM_EXCHANGE'),
-					result: fillActive,
-					get title() { return I18N('ITEM_EXCHANGE_TITLE'); },
-				},
-				{
-					msg: I18N('BUY_SOULS'),
-					result: function () {
-						confShow(`${I18N('RUN_SCRIPT')} ${I18N('BUY_SOULS')}?`, buyHeroFragments);
-					},
-					get title() { return I18N('BUY_SOULS_TITLE'); },
-				},
-				{
-					msg: I18N('BUY_FOR_GOLD'),
-					result: function () {
-						confShow(`${I18N('RUN_SCRIPT')} ${I18N('BUY_FOR_GOLD')}?`, buyInStoreForGold);
-					},
-					get title() { return I18N('BUY_FOR_GOLD_TITLE'); },
-				},
-				{
-					msg: I18N('BUY_OUTLAND'),
-					result: bossOpenChestPay,
-					get title() { return I18N('BUY_OUTLAND_TITLE'); },
-				},
-				{
-					msg: I18N('CLAN_STAT'),
-					result: clanStatistic,
-					get title() { return I18N('CLAN_STAT_TITLE'); },
-				},
-				{
-					msg: I18N('EPIC_BRAWL'),
-					result: async function () {
-						confShow(`${I18N('RUN_SCRIPT')} ${I18N('EPIC_BRAWL')}?`, () => {
-							const brawl = new epicBrawl();
-							brawl.start();
-						});
-					},
-					get title() { return I18N('EPIC_BRAWL_TITLE'); },
-				},
-				{
-					msg: I18N('ARTIFACTS_UPGRADE'),
-					result: updateArtifacts,
-					get title() { return I18N('ARTIFACTS_UPGRADE_TITLE'); },
-				},
-				{
-					msg: I18N('SKINS_UPGRADE'),
-					result: updateSkins,
-					get title() { return I18N('SKINS_UPGRADE_TITLE'); },
-				},
-				{
-					msg: I18N('SEASON_REWARD'),
-					result: farmBattlePass,
-					get title() { return I18N('SEASON_REWARD_TITLE'); },
-				},
-				{
-					msg: I18N('SELL_HERO_SOULS'),
-					result: sellHeroSoulsForGold,
-					get title() { return I18N('SELL_HERO_SOULS_TITLE'); },
-				},
-				{
-					msg: I18N('CHANGE_MAP'),
-					result: async function () {
-						const maps = Object.values(lib.data.seasonAdventure.list)
-							.filter((e) => e.map.cells.length > 3)
-							.map((i) => ({
-								msg: I18N('MAP_NUM', { num: i.id }),
-								result: i.id,
-							}));
-
-						const result = await popup.confirm(I18N('SELECT_ISLAND_MAP'), [...maps, { result: false, isClose: true }]);
-						if (result) {
-							cheats.changeIslandMap(result);
-						}
-					},
-					get title() { return I18N('CHANGE_MAP_TITLE'); },
-				},
-				{
-					msg: I18N('HERO_POWER'),
-					result: async () => {
-						const calls = ['userGetInfo', 'heroGetAll'].map((name) => ({
-							name,
-							args: {},
-							ident: name,
-						}));
-						const [maxHeroSumPower, heroSumPower] = await Send({ calls }).then((e) => [
-							e.results[0].result.response.maxSumPower.heroes,
-							Object.values(e.results[1].result.response).reduce((a, e) => a + e.power, 0),
-						]);
-						const power = maxHeroSumPower - heroSumPower;
-						let msg =
-							I18N('MAX_POWER_REACHED', { power: maxHeroSumPower.toLocaleString() }) +
-							'<br>' +
-							I18N('CURRENT_POWER', { power: heroSumPower.toLocaleString() }) +
-							'<br>' +
-							I18N('POWER_TO_MAX', { power: power.toLocaleString(), color: power >= 4000 ? 'green' : 'red' });
-						await popup.confirm(msg, [{ msg: I18N('BTN_OK'), result: 0 }]);
-					},
-					get title() { return I18N('HERO_POWER_TITLE'); },
-				},
-			];
-			popupButtons.push({ result: false, isClose: true });
-			const answer = await popup.confirm(`${I18N('CHOOSE_ACTION')}:`, popupButtons);
+			const { othersPopupButtons } = HWHData;
+			othersPopupButtons.push({ result: false, isClose: true });
+			const answer = await popup.confirm(`${I18N('CHOOSE_ACTION')}:`, othersPopupButtons);
 			if (typeof answer === 'function') {
 				answer();
 			}
@@ -1535,6 +1359,284 @@ const buttons = {
 		color: 'red',
 	},
 };
+/**
+ * List of buttons by the "Actions" button
+ *
+ * Список кнопочек по кнопке "Действия"
+ */
+
+const actionsPopupButtons = [
+	{
+		get msg() {
+			return I18N('OUTLAND')
+		},
+		result: function () {
+			confShow(`${I18N('RUN_SCRIPT')} ${I18N('OUTLAND')}?`, getOutland);
+		},
+		get title() {
+			return I18N('OUTLAND_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('TOWER')
+		},
+		result: function () {
+			confShow(`${I18N('RUN_SCRIPT')} ${I18N('TOWER')}?`, testTower);
+		},
+		get title() {
+			return I18N('TOWER_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('EXPEDITIONS')
+		},
+		result: function () {
+			confShow(`${I18N('RUN_SCRIPT')} ${I18N('EXPEDITIONS')}?`, checkExpedition);
+		},
+		get title() {
+			return I18N('EXPEDITIONS_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('MINIONS')
+		},
+		result: function () {
+			confShow(`${I18N('RUN_SCRIPT')} ${I18N('MINIONS')}?`, testRaidNodes);
+		},
+		get title() {
+			return I18N('MINIONS_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('ESTER_EGGS')
+		},
+		result: function () {
+			confShow(`${I18N('RUN_SCRIPT')} ${I18N('ESTER_EGGS')}?`, offerFarmAllReward);
+		},
+		get title() {
+			return I18N('ESTER_EGGS_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('STORM')
+		},
+		result: function () {
+			testAdventure('solo');
+		},
+		get title() {
+			return I18N('STORM_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('REWARDS')
+		},
+		result: function () {
+			confShow(`${I18N('RUN_SCRIPT')} ${I18N('REWARDS')}?`, questAllFarm);
+		},
+		get title() {
+			return I18N('REWARDS_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('MAIL')
+		},
+		result: function () {
+			confShow(`${I18N('RUN_SCRIPT')} ${I18N('MAIL')}?`, mailGetAll);
+		},
+		get title() {
+			return I18N('MAIL_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('SEER')
+		},
+		result: function () {
+			confShow(`${I18N('RUN_SCRIPT')} ${I18N('SEER')}?`, rollAscension);
+		},
+		get title() {
+			return I18N('SEER_TITLE');
+		},
+	},
+	// {
+	// 	get msg() {
+	// 		return I18N('NY_GIFTS')
+	// 	},
+	// 	result: getGiftNewYear,
+	// 	get title() { return I18N('NY_GIFTS_TITLE'); },
+	// },
+];
+
+/**
+ * List of buttons by the "Others" button
+ *
+ * Список кнопочек по кнопке "Разное"
+ */
+const othersPopupButtons = [
+	{
+		get msg() {
+			return I18N('GET_ENERGY')
+		},
+		result: farmStamina,
+		get title() {
+			return I18N('GET_ENERGY_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('ITEM_EXCHANGE')
+		},
+		result: fillActive,
+		get title() {
+			return I18N('ITEM_EXCHANGE_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('BUY_SOULS')
+		},
+		result: function () {
+			confShow(`${I18N('RUN_SCRIPT')} ${I18N('BUY_SOULS')}?`, buyHeroFragments);
+		},
+		get title() {
+			return I18N('BUY_SOULS_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('BUY_FOR_GOLD')
+		},
+		result: function () {
+			confShow(`${I18N('RUN_SCRIPT')} ${I18N('BUY_FOR_GOLD')}?`, buyInStoreForGold);
+		},
+		get title() {
+			return I18N('BUY_FOR_GOLD_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('BUY_OUTLAND')
+		},
+		result: bossOpenChestPay,
+		get title() {
+			return I18N('BUY_OUTLAND_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('CLAN_STAT')
+		},
+		result: clanStatistic,
+		get title() {
+			return I18N('CLAN_STAT_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('EPIC_BRAWL')
+		},
+		result: async function () {
+			confShow(`${I18N('RUN_SCRIPT')} ${I18N('EPIC_BRAWL')}?`, () => {
+				const brawl = new epicBrawl();
+				brawl.start();
+			});
+		},
+		get title() {
+			return I18N('EPIC_BRAWL_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('ARTIFACTS_UPGRADE')
+		},
+		result: updateArtifacts,
+		get title() {
+			return I18N('ARTIFACTS_UPGRADE_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('SKINS_UPGRADE')
+		},
+		result: updateSkins,
+		get title() {
+			return I18N('SKINS_UPGRADE_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('SEASON_REWARD')
+		},
+		result: farmBattlePass,
+		get title() {
+			return I18N('SEASON_REWARD_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('SELL_HERO_SOULS')
+		},
+		result: sellHeroSoulsForGold,
+		get title() {
+			return I18N('SELL_HERO_SOULS_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('CHANGE_MAP')
+		},
+		result: async function () {
+			const maps = Object.values(lib.data.seasonAdventure.list)
+				.filter((e) => e.map.cells.length > 3)
+				.map((i) => ({
+					msg: I18N('MAP_NUM', { num: i.id }),
+					result: i.id,
+				}));
+
+			const result = await popup.confirm(I18N('SELECT_ISLAND_MAP'), [...maps, { result: false, isClose: true }]);
+			if (result) {
+				cheats.changeIslandMap(result);
+			}
+		},
+		get title() {
+			return I18N('CHANGE_MAP_TITLE');
+		},
+	},
+	{
+		get msg() {
+			return I18N('HERO_POWER')
+		},
+		result: async () => {
+			const calls = ['userGetInfo', 'heroGetAll'].map((name) => ({
+				name,
+				args: {},
+				ident: name,
+			}));
+			const [maxHeroSumPower, heroSumPower] = await Send({ calls }).then((e) => [
+				e.results[0].result.response.maxSumPower.heroes,
+				Object.values(e.results[1].result.response).reduce((a, e) => a + e.power, 0),
+			]);
+			const power = maxHeroSumPower - heroSumPower;
+			let msg =
+				I18N('MAX_POWER_REACHED', { power: maxHeroSumPower.toLocaleString() }) +
+				'<br>' +
+				I18N('CURRENT_POWER', { power: heroSumPower.toLocaleString() }) +
+				'<br>' +
+				I18N('POWER_TO_MAX', { power: power.toLocaleString(), color: power >= 4000 ? 'green' : 'red' });
+			await popup.confirm(msg, [{ msg: I18N('BTN_OK'), result: 0 }]);
+		},
+		get title() {
+			return I18N('HERO_POWER_TITLE');
+		},
+	},
+];
 /**
  * Display buttons
  *
@@ -2254,7 +2356,7 @@ async function checkChangeSend(sourceData, tempData) {
 					if (call.name == 'adventure_endBattle' ||
 						//call.name == 'invasion_bossEnd' ||
 						call.name == 'bossEndBattle' ||
-						call.name == 'titanArenaEndBattle' ||
+						// call.name == 'titanArenaEndBattle' ||
 						call.name == 'adventureSolo_endBattle') {
 						resultPopup = await showMsgs(I18N('MSG_HAVE_BEEN_DEFEATED'), I18N('BTN_OK'), I18N('BTN_CANCEL'), I18N('BTN_AUTO'));
 					} else if (call.name == 'clanWarEndBattle' ||
@@ -4115,6 +4217,8 @@ this.HWHData = {
 	invasionInfo,
 	invasionDataPacks,
 	countPredictionCard,
+	actionsPopupButtons,
+	othersPopupButtons,
 };
 
 /**
