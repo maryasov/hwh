@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.372.25-09-30-18-39
+// @version			2.374.25-10-02-01-19
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2797,12 +2797,13 @@ async function checkChangeSend(sourceData, tempData) {
 			if (call.name == 'consumableUseLootBox') {
 				lastRussianDollId = call.args.libId;
 				/**
-				 * Specify quantity for gold caskets
-				 * Указать количество для золотых шкатулок
+				 * Specify quantity for Platinum Box and Heroes Box
+				 * Указать количество для платиновых шкатулок и ящиков с героями
 				 */
+				const lootBoxInfo = lib.data.inventoryItem.consumable[call.args.libId];
+				const playerChoiceType = lootBoxInfo?.effectDescription?.playerChoiceType;
 				if (isChecked('countControl') &&
-					call.args.libId == 148 &&
-					call.args.amount > 1) {
+					((call.args.libId == 148 && call.args.amount > 1) || playerChoiceType === 'hero')) {
 					const result = await popup.confirm(I18N('MSG_SPECIFY_QUANT'), [
 						{ msg: I18N('BTN_OPEN'), isInput: true, default: call.args.amount},
 					]);
@@ -9588,7 +9589,7 @@ async function rewardsAndMailFarm() {
 				continue;
 			}
 
-			if (questId > 1e6 && questId < 2e7) {
+			if (quest.reward?.battlePassExp) {
 				const questInfo = questBattlePass[questId];
 				const chain = questChainBPass[questInfo.chain];
 				if (chain.requirement?.battlePassTicket) {
