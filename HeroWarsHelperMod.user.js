@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.374.25-10-02-01-19
+// @version			2.376.25-10-06-09-38
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -9544,13 +9544,30 @@ async function buyInStoreForGold() {
 
 async function rewardsAndMailFarm() {
 	try {
-		const [questGetAll, mailGetAll, specialOffer] = await Caller.send(['questGetAll', 'mailGetAll', 'specialOffer_getAll']);
+		const [questGetAll, mailGetAll, specialOffer, battlePassInfo, battlePassSpecial] = await Caller.send([
+			'questGetAll',
+			'mailGetAll',
+			'specialOffer_getAll',
+			'battlePass_getInfo',
+			'battlePass_getSpecial',
+		]);
 		const questsFarm = questGetAll.filter((e) => e.state == 2);
 		const mailFarm = mailGetAll?.letters || [];
 		const stagesOffers = specialOffer.filter(e => e.offerType === "stagesOffer" && e.farmedStage == -1);
 
+		const listBattlePass = {
+			[battlePassInfo.id]: battlePassInfo.battlePass,
+			...battlePassSpecial,
+		};
+
+		for (const passId in listBattlePass) {
+			const battlePass = listBattlePass[passId];
+			const levels = Object.values(lib.data.battlePass.level).filter((x) => x.battlePass == passId);
+			battlePass.level = Math.max(...levels.filter((p) => battlePass.exp >= p.experience).map((p) => p.level));
+		}
+
 		const questBattlePass = lib.getData('quest').battlePass;
-		const { questChain: questChainBPass, list: listBattlePass } = lib.getData('battlePass');
+		const { questChain: questChainBPass } = lib.getData('battlePass');
 		const currentTime = Date.now();
 
 		const farmCaller = new Caller();
@@ -9592,12 +9609,21 @@ async function rewardsAndMailFarm() {
 			if (quest.reward?.battlePassExp) {
 				const questInfo = questBattlePass[questId];
 				const chain = questChainBPass[questInfo.chain];
-				if (chain.requirement?.battlePassTicket) {
+				const battlePass = listBattlePass[chain.battlePass];
+				if (!battlePass) {
 					continue;
 				}
-				const battlePass = listBattlePass[chain.battlePass];
-				const startTime = battlePass.startCondition.time.value * 1e3;
-				const endTime = startTime + battlePass.duration * 1e3;
+				// Наличие золотого билета
+				if (chain.requirement?.battlePassTicket && !battlePass.ticket) {
+					continue;
+				}
+				// Соответствие требований по уровню
+				if (chain.requirement?.battlePassLevel && battlePass.level < chain.requirement.battlePassLevel) {
+					continue;
+				}
+				const startTime = battlePass.startDate * 1e3;
+				const endTime = battlePass.endDate * 1e3;
+				// Соответствие даты проведения
 				if (startTime > currentTime || endTime < currentTime) {
 					continue;
 				}
