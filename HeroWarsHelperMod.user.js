@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.376.25-10-06-09-38
+// @version			2.378.25-10-25-12-27
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -186,7 +186,11 @@ this.SendRequest = send;
  * Простой расчет боя доступный через консоль
  */
 this.Calc = function (data) {
-	const type = getBattleType(data?.type);
+	const battleType = data?.effects?.battleConfig ?? battle?.type;
+	if (data?.effects?.battleConfig) {
+		console.log('config:', battleType, 'type:', data.type);
+	}
+	const type = getBattleType(battleType);
 	return new Promise((resolve, reject) => {
 		try {
 			BattleCalc(data, type, resolve);
@@ -2204,7 +2208,7 @@ async function checkChangeSend(sourceData, tempData) {
 		 * Функция заменяющая данные боя на неверные для отмены боя
 		 */
 		const fixBattle = function (heroes) {
-                console.trace('fix')
+                console.log('fix')
 			for (const ids in heroes) {
 				hero = heroes[ids];
 				hero.energy = random(1, 999);
@@ -3127,7 +3131,11 @@ async function checkChangeResponse(response) {
 				setProgress(I18N('BEING_RECALC'));
 				let battleDuration = 120;
 				try {
-					const typeBattle = getBattleType(preCalcBattle.type);
+					const battleType = preCalcBattle?.effects?.battleConfig ?? preCalcBattle.type;
+					if (preCalcBattle?.effects?.battleConfig) {
+						console.log('config:', battleType, 'type:', preCalcBattle.type);
+					}
+					const typeBattle = getBattleType(battleType);
 					battleDuration = +lib.data.battleConfig[typeBattle.split('_')[1]].config.battleDuration;
 				} catch (e) { }
 				//console.log(battle.type);
@@ -3136,7 +3144,8 @@ async function checkChangeResponse(response) {
 						if (isRandSeed) {
 							battle.seed = Math.floor(Date.now() / 1000) + random(0, 1e3);
 						}
-						BattleCalc(battle, getBattleType(battle.type), e => resolve(e));
+						const battleType = battle?.effects?.battleConfig ?? battle.type;
+						BattleCalc(battle, getBattleType(battleType), (e) => resolve(e));
 					});
 				}
 				let actions = [getBattleInfo(preCalcBattle, false)];
@@ -3734,6 +3743,9 @@ function getBattleType(strBattleType) {
 			return 'get_core';
 		default: {
 			if (strBattleType.includes('invasion')) {
+				if (strBattleType.includes('titan')) {
+					return 'get_invasionTitan';
+				}
 				return 'get_invasion';
 			}
 			if (strBattleType.includes('boss')) {
@@ -9566,6 +9578,7 @@ async function rewardsAndMailFarm() {
 			battlePass.level = Math.max(...levels.filter((p) => battlePass.exp >= p.experience).map((p) => p.level));
 		}
 
+		const specialQuests = lib.getData('quest').special;
 		const questBattlePass = lib.getData('quest').battlePass;
 		const { questChain: questChainBPass } = lib.getData('battlePass');
 		const currentTime = Date.now();
@@ -9606,8 +9619,11 @@ async function rewardsAndMailFarm() {
 				continue;
 			}
 
-			if (quest.reward?.battlePassExp) {
+			if (quest.reward?.battlePassExp && !specialQuests[questId]) {
 				const questInfo = questBattlePass[questId];
+				if (!questInfo) {
+					continue;
+				}
 				const chain = questChainBPass[questInfo.chain];
 				const battlePass = listBattlePass[chain.battlePass];
 				if (!battlePass) {

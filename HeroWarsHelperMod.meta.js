@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.376.25-10-06-09-38
+// @version			2.378.25-10-25-12-27
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
