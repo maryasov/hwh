@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.383.25-10-26-20-10
+// @version			2.383.25-10-26-20-18
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -15,8 +15,8 @@
 // @match			https://www.hero-wars.com/*
 // @match			https://apps-1701433570146040.apps.fbsbx.com/*
 // @run-at			document-start
-// @downloadURL https://github.com/maryasov/hwh/raw/refs/heads/main/HeroWarsHelperMod.user.js
-// @updateURL https://github.com/maryasov/hwh/raw/refs/heads/main/HeroWarsHelperMod.meta.js
+// @downloadURL https://hwh.vue-z.com/HeroWarsHelperMod.user.js
+// @updateURL https://hwh.vue-z.com/HeroWarsHelperMod.meta.js
 // ==/UserScript==
 
 (function() {
