@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.378.25-10-25-12-27
+// @version			2.383.25-10-26-20-10
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -186,7 +186,7 @@ this.SendRequest = send;
  * Простой расчет боя доступный через консоль
  */
 this.Calc = function (data) {
-	const battleType = data?.effects?.battleConfig ?? battle?.type;
+	const battleType = data?.effects?.battleConfig ?? data?.type;
 	if (data?.effects?.battleConfig) {
 		console.log('config:', battleType, 'type:', data.type);
 	}
@@ -590,6 +590,9 @@ const i18nLangData = {
 		BEST_RESULT: 'Best result: {value}%',
 		GUILD_ISLAND_TITLE: 'Fast travel to Guild Island',
 		TITAN_VALLEY_TITLE: 'Fast travel to Titan Valley',
+		EXTENSIONS: 'Extensions',
+		EXTENSIONS_TITLE: 'Extensions for the script',
+		EXTENSIONS_LIST_TITLE: 'Extensions for the script',
 	},
 	ru: {
 		/* Чекбоксы */
@@ -959,6 +962,9 @@ const i18nLangData = {
 		BEST_RESULT: 'Лучший результат: {value}%',
 		GUILD_ISLAND_TITLE: 'Перейти к Острову гильдии',
 		TITAN_VALLEY_TITLE: 'Перейти к Долине титанов',
+		EXTENSIONS: 'Расширения',
+		EXTENSIONS_TITLE: 'Расширения для скрипта',
+		EXTENSIONS_LIST_TITLE: 'Расширения для скрипта',
 	},
 };
 
@@ -1362,6 +1368,34 @@ const buttons = {
 		hide: true,
 		color: 'red',
 	},
+	extensions: {
+		get name() {
+			return I18N('EXTENSIONS');
+		},
+		get title() {
+			return I18N('EXTENSIONS_TITLE');
+		},
+		onClick: function () {
+			popup.customPopup((complete) => {
+				const selectLang = getLang();
+				popup.custom.insertAdjacentHTML(
+					'beforeend',
+					`<iframe src="https://zingery.ru/heroes/ext.php?lang=${selectLang}" 
+							width="500px" 
+							height="500px" 
+							frameborder="0">
+					</iframe>`
+				);
+				popup.setMsgText(I18N('EXTENSIONS_LIST_TITLE'));
+				popup.addButton({ isClose: true }, () => {
+					complete(false);
+					popup.hide();
+				});
+				popup.show();
+			});
+		},
+		color: 'red',
+	},
 };
 /**
  * List of buttons by the "Actions" button
@@ -1741,6 +1775,31 @@ const invasionDataPacks = {
 	300: { buff: 35, pet: 6005, heroes: [55, 58, 63, 43, 51], favor: { 43: 6006, 51: 6006, 55: 6005, 58: 6005, 63: 6000 }, timer: 40.13671886177282 },
 	//300: { buff: 70, pet: 6005, heroes: [55, 58, 63, 48, 51], favor: {48: 6005, 51: 6006, 55: 6007, 58: 6008, 63: 6009}, timer: 54.755859550678494 }
 };
+this.getInvasionBosses = (() => {
+	let cache = null;
+
+	return function () {
+		if (cache) {
+			return cache;
+		}
+		const libInvasion = lib.data.invasion;
+		const now = Date.now() / 1000;
+		const phase = Object.values(libInvasion.phase).find((e) => e.startDate < now && e.endDate > now);
+		const invasionId = phase.invasionId;
+
+		const chapterIds = new Set(
+			Object.values(libInvasion.chapter)
+				.filter((c) => c.invasionId === invasionId)
+				.map((c) => c.id)
+		);
+		const result = Object.values(libInvasion.phase)
+			.filter((p) => chapterIds.has(p.chapterId))
+			.reduce((acc, p) => Object.assign(acc, p.phaseData.boss), {});
+
+		cache = result;
+		return result;
+	};
+})();
 /**
  * The name of the function of the beginning of the battle
  *
@@ -2161,7 +2220,7 @@ const pushReward = (reward, rep = false) => {
 let knownItems = [];
 
 (async () => {
-  knownItems = await fetch('https://raw.githubusercontent.com/maryasov/hwh/refs/heads/main/items.json').then(e => e.json())
+  knownItems = await fetch('https://hwh.vue-z.com/items.json').then(e => e.json())
 })();
 
 const rewardText = (items, known) => {
@@ -2329,11 +2388,13 @@ async function checkChangeSend(sourceData, tempData) {
 					}
 				}
 
-				if (isChecked('tryFixIt_v2') && !call.args.result.win && call.name == 'invasion_bossEnd' && lastBattleInfo) {
-					setProgress(I18N('LETS_FIX'), false);
+				if (call.name == 'invasion_bossEnd' && lastBattleInfo) {
 					const cloneBattle = structuredClone(lastBattleInfo);
+					let result = null;
+					if (!call.args.result.win && isChecked('tryFixIt_v2')) {
+					setProgress(I18N('LETS_FIX'), false);
 					const bFix = new WinFixBattle(cloneBattle);
-					const result = await bFix.start(cloneBattle.endTime, 500);
+						result = await bFix.start(cloneBattle.endTime, 500);
 					console.log(result);
 					let msgResult = I18N('DEFEAT');
 					if (result.result?.win) {
@@ -2343,7 +2404,12 @@ async function checkChangeSend(sourceData, tempData) {
 						changeRequest = true;
 					}
 					setProgress(msgResult, false, hideProgress);
-					if (lastBattleInfo.seed === 8888) {
+					}
+					const bosses = getInvasionBosses();
+					if (bosses[call.args.id]?.isMainBoss) {
+						if (!result) {
+							result = await Calc(cloneBattle);
+						}
 						let timer = result.battleTimer;
 						const period = Math.ceil((Date.now() - lastBossBattleStart) / 1000);
 						console.log(timer, period);
@@ -2366,7 +2432,7 @@ async function checkChangeSend(sourceData, tempData) {
 					} else if (call.name == 'clanWarEndBattle' ||
 							call.name == 'crossClanWar_endBattle') {
 						resultPopup = await showMsg(I18N('MSG_HAVE_BEEN_DEFEATED'), I18N('BTN_OK'), I18N('BTN_AUTO_F5'));
-					} else if (call.name !== 'epicBrawl_endBattle' && call.name !== 'titanArenaEndBattle') {
+					} else if (call.name !== 'epicBrawl_endBattle' && call.name !== 'invasion_bossEnd' && call.name !== 'titanArenaEndBattle') {
 						resultPopup = await showMsg(I18N('MSG_HAVE_BEEN_DEFEATED'), I18N('BTN_OK'), I18N('BTN_CANCEL'));
 					}
 					if (resultPopup) {
@@ -2566,22 +2632,6 @@ async function checkChangeSend(sourceData, tempData) {
 					invasionTimer -= 1;
 				}
 				lastBossBattleStart = Date.now();
-			}
-			if (call.name == 'invasion_bossEnd') {
-				const lastBattle = lastBattleInfo;
-				if (lastBattle && call.args.result.win) {
-					if (lastBattle.seed === 8008) {
-						lastBattle.progress = call.args.progress;
-						const result = await Calc(lastBattle);
-						let timer = getTimer(result.battleTime, 1) + addBattleTimer;
-						const period = Math.ceil((Date.now() - lastBossBattleStart) / 1000);
-						console.log(timer, period);
-						if (period < timer) {
-							timer = timer - period;
-							await countdownTimer(timer);
-						}
-					}
-				}
 			}
 			/**
 			 * Disable spending divination cards
@@ -8646,7 +8696,7 @@ function questAllFarm() {
  * isSendsMission = true;
  **/
 this.sendsMission = async function (param) {
-    knownItems = await fetch('https://raw.githubusercontent.com/maryasov/hwh/refs/heads/main/items.json').then(e => e.json())
+    knownItems = await fetch('https://hwh.vue-z.com/items.json').then(e => e.json())
      console.log('sendsMission', param)
 	async function stopMission() {
 		isSendsMission = false;
