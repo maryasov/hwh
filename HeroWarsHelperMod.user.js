@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.383.25-10-26-20-18
+// @version			2.390.25-10-28-04-58
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -1376,11 +1376,15 @@ const buttons = {
 			return I18N('EXTENSIONS_TITLE');
 		},
 		onClick: function () {
-			popup.customPopup((complete) => {
+			popup.customPopup(async (complete) => {
 				const selectLang = getLang();
+				const response = await fetch(`https://zingery.ru/heroes/ext.php?lang=${selectLang}`);
+				const html = await response.text();
+				const blob = new Blob([html], { type: 'text/html' });
+				const url = URL.createObjectURL(blob);
 				popup.custom.insertAdjacentHTML(
 					'beforeend',
-					`<iframe src="https://zingery.ru/heroes/ext.php?lang=${selectLang}" 
+					`<iframe src="${url}" 
 							width="500px" 
 							height="500px" 
 							frameborder="0">
@@ -1406,7 +1410,7 @@ const buttons = {
 const actionsPopupButtons = [
 	{
 		get msg() {
-			return I18N('OUTLAND')
+			return I18N('OUTLAND');
 		},
 		result: function () {
 			confShow(`${I18N('RUN_SCRIPT')} ${I18N('OUTLAND')}?`, getOutland);
@@ -1414,10 +1418,11 @@ const actionsPopupButtons = [
 		get title() {
 			return I18N('OUTLAND_TITLE');
 		},
+		isOneSocket: true,
 	},
 	{
 		get msg() {
-			return I18N('TOWER')
+			return I18N('TOWER');
 		},
 		result: function () {
 			confShow(`${I18N('RUN_SCRIPT')} ${I18N('TOWER')}?`, testTower);
@@ -1428,7 +1433,7 @@ const actionsPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('EXPEDITIONS')
+			return I18N('EXPEDITIONS');
 		},
 		result: function () {
 			confShow(`${I18N('RUN_SCRIPT')} ${I18N('EXPEDITIONS')}?`, checkExpedition);
@@ -1439,7 +1444,7 @@ const actionsPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('MINIONS')
+			return I18N('MINIONS');
 		},
 		result: function () {
 			confShow(`${I18N('RUN_SCRIPT')} ${I18N('MINIONS')}?`, testRaidNodes);
@@ -1450,7 +1455,7 @@ const actionsPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('ESTER_EGGS')
+			return I18N('ESTER_EGGS');
 		},
 		result: function () {
 			confShow(`${I18N('RUN_SCRIPT')} ${I18N('ESTER_EGGS')}?`, offerFarmAllReward);
@@ -1461,7 +1466,7 @@ const actionsPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('STORM')
+			return I18N('STORM');
 		},
 		result: function () {
 			testAdventure('solo');
@@ -1472,7 +1477,7 @@ const actionsPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('REWARDS')
+			return I18N('REWARDS');
 		},
 		result: function () {
 			confShow(`${I18N('RUN_SCRIPT')} ${I18N('REWARDS')}?`, questAllFarm);
@@ -1483,7 +1488,7 @@ const actionsPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('MAIL')
+			return I18N('MAIL');
 		},
 		result: function () {
 			confShow(`${I18N('RUN_SCRIPT')} ${I18N('MAIL')}?`, mailGetAll);
@@ -1494,7 +1499,7 @@ const actionsPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('SEER')
+			return I18N('SEER');
 		},
 		result: function () {
 			confShow(`${I18N('RUN_SCRIPT')} ${I18N('SEER')}?`, rollAscension);
@@ -1520,16 +1525,17 @@ const actionsPopupButtons = [
 const othersPopupButtons = [
 	{
 		get msg() {
-			return I18N('GET_ENERGY')
+			return I18N('GET_ENERGY');
 		},
 		result: farmStamina,
 		get title() {
 			return I18N('GET_ENERGY_TITLE');
 		},
+		isOneSocket: true,
 	},
 	{
 		get msg() {
-			return I18N('ITEM_EXCHANGE')
+			return I18N('ITEM_EXCHANGE');
 		},
 		result: fillActive,
 		get title() {
@@ -1538,7 +1544,7 @@ const othersPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('BUY_SOULS')
+			return I18N('BUY_SOULS');
 		},
 		result: function () {
 			confShow(`${I18N('RUN_SCRIPT')} ${I18N('BUY_SOULS')}?`, buyHeroFragments);
@@ -1549,7 +1555,7 @@ const othersPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('BUY_FOR_GOLD')
+			return I18N('BUY_FOR_GOLD');
 		},
 		result: function () {
 			confShow(`${I18N('RUN_SCRIPT')} ${I18N('BUY_FOR_GOLD')}?`, buyInStoreForGold);
@@ -1560,7 +1566,7 @@ const othersPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('BUY_OUTLAND')
+			return I18N('BUY_OUTLAND');
 		},
 		result: bossOpenChestPay,
 		get title() {
@@ -1569,7 +1575,7 @@ const othersPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('CLAN_STAT')
+			return I18N('CLAN_STAT');
 		},
 		result: clanStatistic,
 		get title() {
@@ -1578,7 +1584,7 @@ const othersPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('EPIC_BRAWL')
+			return I18N('EPIC_BRAWL');
 		},
 		result: async function () {
 			confShow(`${I18N('RUN_SCRIPT')} ${I18N('EPIC_BRAWL')}?`, () => {
@@ -1592,7 +1598,7 @@ const othersPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('ARTIFACTS_UPGRADE')
+			return I18N('ARTIFACTS_UPGRADE');
 		},
 		result: updateArtifacts,
 		get title() {
@@ -1601,7 +1607,7 @@ const othersPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('SKINS_UPGRADE')
+			return I18N('SKINS_UPGRADE');
 		},
 		result: updateSkins,
 		get title() {
@@ -1610,7 +1616,7 @@ const othersPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('SEASON_REWARD')
+			return I18N('SEASON_REWARD');
 		},
 		result: farmBattlePass,
 		get title() {
@@ -1619,7 +1625,7 @@ const othersPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('SELL_HERO_SOULS')
+			return I18N('SELL_HERO_SOULS');
 		},
 		result: sellHeroSoulsForGold,
 		get title() {
@@ -1628,7 +1634,7 @@ const othersPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('CHANGE_MAP')
+			return I18N('CHANGE_MAP');
 		},
 		result: async function () {
 			const maps = Object.values(lib.data.seasonAdventure.list)
@@ -1649,7 +1655,7 @@ const othersPopupButtons = [
 	},
 	{
 		get msg() {
-			return I18N('HERO_POWER')
+			return I18N('HERO_POWER');
 		},
 		result: async () => {
 			const calls = ['userGetInfo', 'heroGetAll'].map((name) => ({
@@ -1961,14 +1967,12 @@ function confShow(message, yesCallback, noCallback) {
 	noCallback = noCallback || (() => {});
 	if (yesCallback) {
 		buts = [
-			{ msg: I18N('BTN_RUN'), result: true},
-			{ msg: I18N('BTN_CANCEL'), result: false, isCancel: true},
+			{ msg: I18N('BTN_RUN'), result: true, color: 'green'},
+			{ msg: I18N('BTN_CANCEL'), result: false, isCancel: true, color: 'red'},
 		]
 	} else {
 		yesCallback = () => {};
-		buts = [
-			{ msg: I18N('BTN_OK'), result: true},
-		];
+		buts = [{ msg: I18N('BTN_OK'), result: true, color: 'green' }];
 	}
 	popup.confirm(message, buts).then((e) => {
 		// dialogPromice = null;
@@ -2374,8 +2378,8 @@ async function checkChangeSend(sourceData, tempData) {
 						} else if (result.value > 0) {
 							if (
 								await popup.confirm(I18N('DEFEAT') + '<br>' + I18N('BEST_RESULT', { value: result.value }), [
-									{ msg: I18N('BTN_CANCEL'), result: 0 },
-									{ msg: I18N('BTN_ACCEPT'), result: 1 },
+									{ msg: I18N('BTN_CANCEL'), result: 0, color: 'red' },
+									{ msg: I18N('BTN_ACCEPT'), result: 1, color: 'geeen' },
 								])
 							) {
 								call.args.result = result.result;
@@ -4575,31 +4579,16 @@ const popup = new (function () {
 		margin-top: 25px;
 	}
 
-	.PopUp_buttons {
-		display: flex;
-		margin: 7px 10px;
-		flex-direction: column;
-	}
-
-	.PopUp_button {
-		background-color: #52A81C;
-		border-radius: 5px;
-		box-shadow: inset 0px -4px 10px, inset 0px 3px 2px #99fe20, 0px 0px 4px, 0px -3px 1px #d7b275, 0px 0px 0px 3px #ce9767;
-		cursor: pointer;
-		padding: 4px 12px 6px;
-	}
-
 	.PopUp_input {
 		text-align: center;
 		font-size: 16px;
 		height: 27px;
-		border: 1px solid #cf9250;
+		width: 100%;
+		border: 0px solid #cf9250;
 		border-radius: 9px 9px 0px 0px;
-		background: transparent;
+		background: #170d07;
 		color: #fce1ac;
-		padding: 1px 10px;
 		box-sizing: border-box;
-		box-shadow: 0px 0px 4px, 0px 0px 0px 3px #ce9767;
 	}
 
 	.PopUp_checkboxes {
@@ -4657,14 +4646,6 @@ const popup = new (function () {
 		padding: 2px 18px 5px;
 	}
 
-	.PopUp_button:hover {
-		filter: brightness(1.2);
-	}
-
-	.PopUp_button:active {
-		box-shadow: inset 0px 5px 10px, inset 0px 1px 2px #99fe20, 0px 0px 4px, 0px -3px 1px #d7b275, 0px 0px 0px 3px #ce9767;
-	}
-
 	.PopUp_text {
 		font-size: 22px;
 		font-family: sans-serif;
@@ -4672,14 +4653,6 @@ const popup = new (function () {
 		font-stretch: condensed;
 		letter-spacing: 1px;
 		text-align: center;
-	}
-
-	.PopUp_buttonText {
-		color: #E4FF4C;
-		text-shadow: 0px 1px 2px black;
-	}
-
-	.PopUp_msgText {
 		color: #FDE5B6;
 		text-shadow: 0px 0px 2px;
 	}
@@ -4694,7 +4667,177 @@ const popup = new (function () {
 		overflow-x: hidden;
 		scrollbar-width: thin;
 		scrollbar-color: #774d10 #05040300;
-		padding: 0 1rem;
+	}
+
+		/* === НОВЫЕ КНОПКИ с цветовыми переменными === */
+	.PopUp_btnSocket {
+		margin: 3px 1px;
+		position: relative;
+		display: flex;
+		padding: 4px 4px 4px 3px;
+		flex-direction: column;
+		align-items: flex-start;
+		border-radius: 9px;
+		background: #a37738;
+		box-shadow: 0px -1px 1px 0px #7d5b3a inset, 0px 1px 1px 0px #e1a960 inset,
+			-1px 0px 1px 0px #311d13 inset;
+	}
+	.PopUp_btnRow {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		align-self: stretch;
+		width: 100%;
+		flex-wrap: wrap;
+	}
+	.PopUp_btnGap {
+		position: relative;
+		display: flex;
+		padding: 0px 1px 4px 1px;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 2px;
+		border-radius: 5px;
+		cursor: pointer;
+		flex: auto;
+		transition: all 0.1s ease;
+
+		/* Цветовые переменные по умолчанию — коричневый */
+		--h: 36;
+		--s: 60%;
+		--l: 10%;
+		--pl: 50%;
+		--pcl: 90%;
+		--phl: 55%;
+		--pal: 34%;
+		--pacl: 71%;
+		--sc: hsl(36, 88%, 7%);
+	}
+	.PopUp_btnGap:first-child,
+	.PopUp_btnGap.left {
+		padding-left: 2px;
+	}
+	.PopUp_btnGap:last-child,
+	.PopUp_btnGap.right {
+		padding-right: 3px;
+	}
+	.PopUp_btnGap {
+		background: hsl(var(--h), var(--s), var(--l));
+		box-shadow: 0px 0px 2px 0px var(--sc), 0px -1px 2px 0px var(--sc),
+			0px 1px 1px 0px hsl(var(--h), var(--s), 12%);
+	}
+	.PopUp_btnPlate {
+		display: flex;
+		height: 13px;
+		padding: 12px 10px;
+		box-sizing: content-box;
+		justify-content: center;
+		align-items: center;
+		align-self: stretch;
+		gap: 10px;
+		border-radius: 4px;
+		filter: blur(0.2px);
+		transition: all 0.1s ease;
+		text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.92);
+		font-family: Arial;
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 700;
+		line-height: normal;
+		color: hsla(var(--h), var(--s), var(--pcl), 1);
+		background: hsla(var(--h), var(--s), var(--pl), 1);
+		box-shadow: 0px 10px 12px 0px hsla(var(--h), 58%, 67%, 0.2) inset,
+			0px 2px 1px 0px hsl(var(--h), 78%, 77%) inset,
+			0px 2px 0px 0px hsl(var(--h), 78%, 37%) inset,
+			-8px 3px 15px 0px hsl(var(--h), 94%, 15%) inset,
+			8px -7px 15px 0px hsla(var(--h), 94%, 15%, 0.7) inset,
+			0px 0px 2px 0px hsl(var(--h), 68%, 23%),
+			0px -3px 8px 0px hsl(var(--h), 94%, 20%) inset;
+	}
+	.PopUp_btnPlate:hover {
+		color: hsla(0, 0%, 96%, 1);
+		background: hsla(var(--h), 49%, var(--phl), 1);
+	}
+	.PopUp_btnGap:active {
+		padding-top: 1px;
+		padding-bottom: 3px;
+		background: hsl(var(--h), var(--s), var(--l));
+		box-shadow: 0px 0px 2px 0px var(--sc), 0px -1px 2px 0px var(--sc),
+			0px 1px 1px 0px hsl(var(--h), var(--s), 12%);
+	}
+	.PopUp_btnPlate:active {
+		color: hsla(var(--h), 47%, var(--pacl), 1);
+		background: hsl(var(--h), 46%, var(--pal));
+	}
+
+	/* === Цветовые переопределения === */
+	.PopUp_btnGap.brown {
+		--pl: 40%;
+		--pcl: 85%;
+		--s: 60%;
+	}
+	.PopUp_btnGap.green {
+		--h: 120;
+	}
+	.PopUp_btnGap.blue {
+		--h: 207;
+	}
+	.PopUp_btnGap.violet {
+		--h: 272;
+	}
+	.PopUp_btnGap.yellow {
+		--h: 45;
+	}
+	.PopUp_btnGap.orange {
+		--h: 20;
+	}
+	.PopUp_btnGap.indigo {
+		--h: 255;
+	}
+	.PopUp_btnGap.black {
+		--h: 0;
+		--s: 0%;
+		--l: 10%;
+		--pl: 20%;
+		--pcl: 85%;
+		--phl: 25%;
+		--pal: 15%;
+		--pacl: 71%;
+		--sc: hsl(0, 0%, 5%);
+	}
+	.PopUp_btnGap.pink {
+		--h: 330;
+	}
+	.PopUp_btnGap.red {
+		--h: 0;
+	}
+	.PopUp_btnGap.graphite {
+		background: hsl(0, 0%, 12%);
+		box-shadow: 0px 0px 2px 0px hsl(0, 0%, 7%), 0px -1px 2px 0px hsl(0, 0%, 7%),
+			0px 1px 1px 0px hsl(0, 0%, 12%);
+	}
+	.PopUp_btnGap.graphite .PopUp_btnPlate {
+		color: hsla(0, 0%, 85%, 1);
+		background: hsla(0, 0%, 54%, 1);
+		box-shadow: 0px 10px 12px 0px hsla(0, 0%, 67%, 0.2) inset,
+			0px 2px 1px 0px hsl(0, 0%, 67%) inset,
+			-8px 3px 15px 0px hsla(0, 0%, 15%, 0.7) inset,
+			8px -7px 15px 0px hsla(0, 0%, 15%, 0.7) inset,
+			0px 0px 2px 0px hsla(0, 0%, 23%, 0.3),
+			0px -3px 8px 0px hsla(0, 0%, 13%, 0.3) inset;
+	}
+	.PopUp_btnGap.graphite .PopUp_btnPlate:hover {
+		color: hsla(0, 0%, 96%, 1);
+		background: hsla(0, 0%, 62%, 1);
+	}
+	.PopUp_btnGap.graphite:active {
+		background: hsl(0, 0%, 12%);
+		box-shadow: 0px 0px 2px 0px hsl(0, 0%, 7%), 0px -1px 2px 0px hsl(0, 0%, 7%),
+			0px 1px 1px 0px hsl(0, 0%, 12%);
+	}
+	.PopUp_btnGap.graphite .PopUp_btnPlate:active {
+		color: hsla(0, 0%, 71%, 1);
+		background: hsl(0, 0%, 34%);
 	}
 	`;
 		document.head.appendChild(style);
@@ -4710,22 +4853,26 @@ const popup = new (function () {
 		this.popUp.classList.add('PopUp_');
 		this.back.append(this.popUp);
 
-		let upper = document.createElement('div')
-		upper.classList.add('PopUp_blocks');
-		this.popUp.append(upper);
+		this.popUpContainer = document.createElement('div');
+		this.popUpContainer.classList.add('PopUp_Container');
+		this.popUp.append(this.popUpContainer);
 
-		this.middle = document.createElement('div')
+		let upper = document.createElement('div');
+		upper.classList.add('PopUp_blocks');
+		this.popUpContainer.append(upper);
+
+		this.middle = document.createElement('div');
 		this.middle.classList.add('PopUp_blocks');
 		this.middle.classList.add('PopUp_checkboxes');
-		this.popUp.append(this.middle);
+		this.popUpContainer.append(this.middle);
 
 		this.custom = document.createElement('div');
-		this.custom.classList.add('PopUp_Container');
-		this.popUp.append(this.custom);
+		this.custom.classList.add('PopUp_custom');
+		this.popUpContainer.append(this.custom);
 
-		this.downer = document.createElement('div')
+		this.downer = document.createElement('div');
 		this.downer.classList.add('PopUp_blocks');
-		this.popUp.append(this.downer);
+		this.popUpContainer.append(this.downer);
 
 		this.msgText = document.createElement('div');
 		this.msgText.classList.add('PopUp_text', 'PopUp_msgText');
@@ -4754,13 +4901,41 @@ const popup = new (function () {
 	}
 
 	this.addAnyButton = (option) => {
-		const contButton = document.createElement('div');
-		contButton.classList.add('PopUp_buttons');
-		this.downer.append(contButton);
+		if (option.isOneSocket) {
+			this.isOneSocket = true;
+		}
+
+		if (!this.btnSocket || !this.isOneSocket) {
+			this.btnSocket = document.createElement('div');
+			this.btnSocket.classList.add('PopUp_btnSocket');
+			this.downer.append(this.btnSocket);
+			option.isNewSocket = false;
+
+			this.btnRow = document.createElement('div');
+			this.btnRow.classList.add('PopUp_btnRow');
+			if (option.isWrap) {
+				this.btnRow.style.flexWrap = 'wrap';
+			}
+			this.btnSocket.append(this.btnRow);
+			option.isNewRow = false;
+		}
+
+		if (option.isNewSocket) {
+			this.btnSocket = document.createElement('div');
+			this.btnSocket.classList.add('PopUp_btnSocket');
+			this.downer.append(this.btnSocket);
+			option.isNewRow = true;
+		}
+
+		if (option.isNewRow) {
+			this.btnRow = document.createElement('div');
+			this.btnRow.classList.add('PopUp_btnRow');
+			this.btnSocket.append(this.btnRow);
+		}
 
 		let inputField = {
-			value: option.result || option.default
-		}
+			value: option.result || option.default,
+		};
 		if (option.isInput) {
 			inputField = document.createElement('input');
 			inputField.type = 'text';
@@ -4771,21 +4946,26 @@ const popup = new (function () {
 				inputField.value = option.default;
 			}
 			inputField.classList.add('PopUp_input');
-			contButton.append(inputField);
+			this.btnRow.append(inputField);
 		}
 
 		const button = document.createElement('div');
-		button.classList.add('PopUp_button');
+		button.classList.add('PopUp_btnGap', option.color ?? 'indigo');
 		button.title = option.title || '';
-		contButton.append(button);
+		this.btnRow.append(button);
 
 		const buttonText = document.createElement('div');
-		buttonText.classList.add('PopUp_text', 'PopUp_buttonText');
+		buttonText.classList.add('PopUp_btnPlate');
 		buttonText.innerHTML = option.msg;
 		button.append(buttonText);
 
+		const contButton = this.btnSocket;
+		if (option.isInput) {
+			this.btnSocket = null;
+		}
+
 		return { button, contButton, inputField };
-	}
+	};
 
 	this.addCloseButton = () => {
 		let button = document.createElement('div')
@@ -4820,6 +5000,9 @@ const popup = new (function () {
 	}
 
 	this.clearButtons = () => {
+		this.isOneSocket = null;
+		this.btnSocket = null;
+		this.btnRow = null;
 		while (this.buttons.length) {
 			this.buttons.pop().remove();
 		}
@@ -5033,6 +5216,10 @@ this.HWHFuncs.EventEmitterMixin = EventEmitterMixin;
  * Script control panel
  *
  * Панель управления скриптом
+ *
+ * Дизайн и стили кнопок
+ * Anton Nazarov
+ * https://t.me/antiokh
  */
 class ScriptMenu extends EventEmitterMixin() {
 	constructor() {
@@ -5071,6 +5258,7 @@ class ScriptMenu extends EventEmitterMixin() {
 	addStyle() {
 		const style = document.createElement('style');
 		style.innerText = `
+		/* === Статус и переключатель меню === */
 			.scriptMenu_status {
 				position: absolute;
 				z-index: 10001;
@@ -5083,8 +5271,6 @@ class ScriptMenu extends EventEmitterMixin() {
 				font-size: 18px;
 				font-family: sans-serif;
 				font-weight: 600;
-				font-stretch: condensed;
-				letter-spacing: 1px;
 				color: #fce1ac;
 				text-shadow: 0px 0px 1px;
 				transition: 0.5s;
@@ -5140,8 +5326,6 @@ class ScriptMenu extends EventEmitterMixin() {
 				font-size: 15px;
 				font-family: sans-serif;
 				font-weight: 600;
-				font-stretch: condensed;
-				letter-spacing: 1px;
 				color: #fce1ac;
 				text-shadow: 0px 0px 1px;
 				transition: 1s;
@@ -5149,15 +5333,15 @@ class ScriptMenu extends EventEmitterMixin() {
 			.scriptMenu_conteiner {
 				max-height: 80vh;
 				overflow: scroll;
-				scrollbar-width: none; /* Для Firefox */
-				-ms-overflow-style: none; /* Для Internet Explorer и Edge */
+			scrollbar-width: none; /* Firefox */
+			-ms-overflow-style: none; /* IE/Edge */
 				display: flex;
 				flex-direction: column;
 				flex-wrap: nowrap;
 				padding: 5px 10px 5px 5px;
 			}
 			.scriptMenu_conteiner::-webkit-scrollbar {
-				display: none; /* Для Chrome, Safari и Opera */
+			display: none; /* Chrome/Safari/Opera */
 			}
 			.scriptMenu_showMenu {
 				display: none;
@@ -5168,6 +5352,8 @@ class ScriptMenu extends EventEmitterMixin() {
 			.scriptMenu_showMenu:not(:checked)~.scriptMenu_main {
 				left: -300px;
 			}
+
+		/* === Чекбоксы и инпуты === */
 			.scriptMenu_divInput {
 				margin: 2px;
 			}
@@ -5198,6 +5384,8 @@ class ScriptMenu extends EventEmitterMixin() {
 			.scriptMenu_checkbox:checked+label::before {
 				background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2388cb13' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
 			}
+
+		/* === Закрытие меню === */
 			.scriptMenu_close {
 				width: 40px;
 				height: 40px;
@@ -5223,19 +5411,8 @@ class ScriptMenu extends EventEmitterMixin() {
 				background-repeat: no-repeat;
 				background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23f4cd73' d='M 0.826 12.559 C 0.431 12.963 3.346 15.374 3.74 14.97 C 4.215 15.173 8.167 10.457 7.804 10.302 C 7.893 10.376 11.454 14.64 11.525 14.372 C 12.134 15.042 15.118 12.086 14.638 11.689 C 14.416 11.21 10.263 7.477 10.402 7.832 C 10.358 7.815 11.731 7.101 14.872 3.114 C 14.698 2.145 13.024 1.074 12.093 1.019 C 11.438 0.861 8.014 5.259 8.035 5.531 C 7.86 5.082 3.61 1.186 3.522 1.59 C 2.973 1.027 0.916 4.611 1.17 4.873 C 0.728 4.914 5.088 7.961 5.61 7.995 C 5.225 7.532 0.622 12.315 0.826 12.559 Z'/%3e%3c/svg%3e")
 			}
-			.scriptMenu_button {
-				user-select: none;
-				cursor: pointer;
-				padding: 5px 14px 8px;
-			}
-			.scriptMenu_button:hover {
-				filter: brightness(1.2);
-			}
-			.scriptMenu_buttonText {
-				color: #fce5b7;
-				text-shadow: 0px 1px 2px black;
-				text-align: center;
-			}
+
+		/* === Заголовки и детали === */
 			.scriptMenu_header {
 				text-align: center;
 				align-self: center;
@@ -5271,59 +5448,177 @@ class ScriptMenu extends EventEmitterMixin() {
 			.scriptMenu_Details {
 				align-self: center;
 			}
-			.scriptMenu_buttonGroup {
+
+		/* === НОВЫЕ КНОПКИ с цветовыми переменными === */
+		.scriptMenu_btnSocket {
+			position: relative;
 				display: flex;
-				justify-content: center;
-				user-select: none;
-				cursor: pointer;
-				padding: 0;
-				margin: 3px 0;
+			padding: 4px 4px 4px 3px;
+			flex-direction: column;
+			align-items: flex-start;
+			border-radius: 9px;
+			background: #a37738;
+			box-shadow: 0px -1px 1px 0px #7d5b3a inset, 0px 1px 1px 0px #e1a960 inset,
+				-1px 0px 1px 0px #311d13 inset;
 			}
-			.scriptMenu_buttonGroup .scriptMenu_button {
+		.scriptMenu_btnRow {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			align-self: stretch;
 				width: 100%;
-				padding: 5px 8px 8px;
 			}
-			.scriptMenu_mainButton {
+		.scriptMenu_btnGap {
+			position: relative;
+			display: flex;
+			padding: 0px 1px 4px 1px;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 2px;
 				border-radius: 5px;
-				margin: 3px 0;
+			cursor: pointer;
+			flex: auto;
+			transition: all 0.1s ease;
+
+			/* Цветовые переменные по умолчанию — коричневый */
+			--h: 36;
+			--s: 60%;
+			--l: 10%;
+			--pl: 50%;
+			--pcl: 90%;
+			--phl: 55%;
+			--pal: 34%;
+			--pacl: 71%;
+			--sc: hsl(36, 88%, 7%);
+		}
+		.scriptMenu_btnGap:first-child,
+		.scriptMenu_btnGap.left {
+			padding-left: 2px;
+		}
+		.scriptMenu_btnGap:last-child,
+		.scriptMenu_btnGap.right {
+			padding-right: 3px;
+		}
+		.scriptMenu_btnGap {
+			background: hsl(var(--h), var(--s), var(--l));
+			box-shadow: 0px 0px 2px 0px var(--sc), 0px -1px 2px 0px var(--sc),
+				0px 1px 1px 0px hsl(var(--h), var(--s), 12%);
 			}
-			.scriptMenu_combineButtonLeft {
-				border-top-left-radius: 5px;
-				border-bottom-left-radius: 5px;
-				margin-right: 2px;
+		.scriptMenu_btnPlate {
+			display: flex;
+			height: 13px;
+			padding: 12px 10px;
+			box-sizing: content-box;
+			justify-content: center;
+			align-items: center;
+			align-self: stretch;
+			gap: 10px;
+			border-radius: 4px;
+			filter: blur(0.2px);
+			transition: all 0.1s ease;
+			text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.92);
+			font-family: Arial;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 700;
+			line-height: normal;
+			color: hsla(var(--h), var(--s), var(--pcl), 1);
+			background: hsla(var(--h), var(--s), var(--pl), 1);
+			box-shadow: 0px 10px 12px 0px hsla(var(--h), 58%, 67%, 0.2) inset,
+				0px 2px 1px 0px hsl(var(--h), 78%, 77%) inset,
+				0px 2px 0px 0px hsl(var(--h), 78%, 37%) inset,
+				-8px 3px 15px 0px hsl(var(--h), 94%, 15%) inset,
+				8px -7px 15px 0px hsla(var(--h), 94%, 15%, 0.7) inset,
+				0px 0px 2px 0px hsl(var(--h), 68%, 23%),
+				0px -3px 8px 0px hsl(var(--h), 94%, 20%) inset;
+		}
+		.scriptMenu_btnPlate:hover {
+			color: hsla(0, 0%, 96%, 1);
+			background: hsla(var(--h), 49%, var(--phl), 1);
+		}
+		.scriptMenu_btnGap:active {
+			padding-top: 1px;
+			padding-bottom: 3px;
+			background: hsl(var(--h), var(--s), var(--l));
+			box-shadow: 0px 0px 2px 0px var(--sc), 0px -1px 2px 0px var(--sc),
+				0px 1px 1px 0px hsl(var(--h), var(--s), 12%);
+		}
+		.scriptMenu_btnPlate:active {
+			color: hsla(var(--h), 47%, var(--pacl), 1);
+			background: hsl(var(--h), 46%, var(--pal));
+		}
+
+		/* === Цветовые переопределения === */
+		.scriptMenu_btnGap.brown {
+			--pl: 40%;
+			--pcl: 85%;
+			--s: 60%;
+		}
+		.scriptMenu_btnGap.green {
+			--h: 120;
+		}
+		.scriptMenu_btnGap.blue {
+			--h: 207;
 			}
-			.scriptMenu_combineButtonCenter {
-				border-radius: 0px;
-				margin-right: 2px;
+		.scriptMenu_btnGap.violet {
+			--h: 272;
+		}
+		.scriptMenu_btnGap.yellow {
+			--h: 45;
+		}
+		.scriptMenu_btnGap.orange {
+			--h: 20;
+		}
+		.scriptMenu_btnGap.indigo {
+			--h: 255;
 			}
-			.scriptMenu_combineButtonRight {
-				border-top-right-radius: 5px;
-				border-bottom-right-radius: 5px;
+		.scriptMenu_btnGap.black {
+			--h: 0;
+			--s: 0%;
+			--l: 10%;
+			--pl: 20%;
+			--pcl: 85%;
+			--phl: 25%;
+			--pal: 15%;
+			--pacl: 71%;
+			--sc: hsl(0, 0%, 5%);
 			}
-			.scriptMenu_beigeButton {
-				border: 1px solid #442901;
-				background: radial-gradient(circle, rgba(165,120,56,1) 80%, rgba(0,0,0,1) 110%);
-				box-shadow: inset 0px 2px 4px #e9b282, inset 0px -4px 6px #442901, inset 0px 1px 6px #442901, inset 0px 0px 6px, 0px 0px 2px black, 0px 0px 0px 1px #ce9767;
+		.scriptMenu_btnGap.pink {
+			--h: 330;
 			}
-			.scriptMenu_beigeButton:active {
-				box-shadow: inset 0px 4px 6px #442901, inset 0px 4px 6px #442901, inset 0px 0px 6px, 0px 0px 4px, 0px 0px 0px 1px #ce9767;
+		.scriptMenu_btnGap.red {
+			--h: 0;
 			}
-			.scriptMenu_greenButton {
-				border: 1px solid #1a2f04;
-				background: radial-gradient(circle, #47a41b 0%, #1a2f04 150%);
-				box-shadow: inset 0px 2px 4px #83ce26, inset 0px -4px 6px #1a2f04, 0px 0px 2px black, 0px 0px 0px 1px #ce9767;
+		.scriptMenu_btnGap.graphite {
+			background: hsl(0, 0%, 12%);
+			box-shadow: 0px 0px 2px 0px hsl(0, 0%, 7%), 0px -1px 2px 0px hsl(0, 0%, 7%),
+				0px 1px 1px 0px hsl(0, 0%, 12%);
 			}
-			.scriptMenu_greenButton:active {
-				box-shadow: inset 0px 4px 6px #1a2f04, inset 0px 4px 6px #1a2f04, inset 0px 0px 6px, 0px 0px 4px, 0px 0px 0px 1px #ce9767;
+		.scriptMenu_btnGap.graphite .scriptMenu_btnPlate {
+			color: hsla(0, 0%, 85%, 1);
+			background: hsla(0, 0%, 54%, 1);
+			box-shadow: 0px 10px 12px 0px hsla(0, 0%, 67%, 0.2) inset,
+				0px 2px 1px 0px hsl(0, 0%, 67%) inset,
+				-8px 3px 15px 0px hsla(0, 0%, 15%, 0.7) inset,
+				8px -7px 15px 0px hsla(0, 0%, 15%, 0.7) inset,
+				0px 0px 2px 0px hsla(0, 0%, 23%, 0.3),
+				0px -3px 8px 0px hsla(0, 0%, 13%, 0.3) inset;
 			}
-			.scriptMenu_redButton {
-				border: 1px solid #440101;
-				background: radial-gradient(circle, rgb(198, 34, 34) 80%, rgb(0, 0, 0) 110%);
-				box-shadow: inset 0px 2px 4px #e98282, inset 0px -4px 6px #440101, inset 0px 1px 6px #440101, inset 0px 0px 6px, 0px 0px 2px black, 0px 0px 0px 1px #ce9767;
+		.scriptMenu_btnGap.graphite .scriptMenu_btnPlate:hover {
+			color: hsla(0, 0%, 96%, 1);
+			background: hsla(0, 0%, 62%, 1);
 			}
-			.scriptMenu_redButton:active {
-				box-shadow: inset 0px 4px 6px #440101, inset 0px 4px 6px #440101, inset 0px 0px 6px, 0px 0px 4px, 0px 0px 0px 1px #ce9767;
+		.scriptMenu_btnGap.graphite:active {
+			background: hsl(0, 0%, 12%);
+			box-shadow: 0px 0px 2px 0px hsl(0, 0%, 7%), 0px -1px 2px 0px hsl(0, 0%, 7%),
+				0px 1px 1px 0px hsl(0, 0%, 12%);
 			}
+		.scriptMenu_btnGap.graphite .scriptMenu_btnPlate:active {
+			color: hsla(0, 0%, 71%, 1);
+			background: hsl(0, 0%, 34%);
+		}
+
+		/* === Индикаторы (оставляем как было) === */
 			.scriptMenu_attention {
 				position: relative;
 			}
@@ -5403,9 +5698,16 @@ class ScriptMenu extends EventEmitterMixin() {
 
 	getButtonColor(color) {
 		const buttonColors = {
-			green: 'scriptMenu_greenButton',
-			red: 'scriptMenu_redButton',
-			beige: 'scriptMenu_beigeButton',
+			green: 'green',
+			beige: 'brown',
+			blue: 'blue',
+			violet: 'violet',
+			yellow: 'yellow',
+			orange: 'orange',
+			indigo: 'indigo',
+			pink: 'pink',
+			red: 'red',
+			graphite: 'graphite',
 		};
 		return buttonColors[color] || buttonColors['beige'];
 	}
@@ -5439,6 +5741,9 @@ class ScriptMenu extends EventEmitterMixin() {
 
 	addHeader(text, onClick, main = this.mainMenu) {
 		this.emit('beforeAddHeader', text, onClick, main);
+		if (this.btnSocket) {
+			this.btnSocket = null;
+		}
 		const header = document.createElement('div');
 		header.classList.add('scriptMenu_header');
 		header.innerHTML = text;
@@ -5450,28 +5755,49 @@ class ScriptMenu extends EventEmitterMixin() {
 		return header;
 	}
 
-	addButton(btn, main = this.mainMenu) {
+	addBtnSocket(back) {
+		this.btnSocket = document.createElement('div');
+		this.btnSocket.classList.add('scriptMenu_btnSocket');
+		(back ?? this.mainMenu).appendChild(this.btnSocket);
+		return this.btnSocket;
+	}
+
+	addButton(btn, main = this.btnSocket) {
 		this.emit('beforeAddButton', btn, main);
+		//debugger;
+		let back = null;
+		if (!this.btnSocket) {
+			back = main;
+			main = this.addBtnSocket(back);
+			this.btnSocket = main;
+		}
+		let isOneButton = false;
+
+		if (!main.classList.contains('scriptMenu_btnRow')) {
+			main = document.createElement('div');
+			main.classList.add('scriptMenu_btnRow');
+			isOneButton = true;
+		}
+
 		const { name, onClick, title, color, dot, classes = [], isCombine } = btn;
 		const button = document.createElement('div');
-		if (!isCombine) {
-			classes.push('scriptMenu_mainButton');
-		}
-		button.classList.add('scriptMenu_button', this.getButtonColor(color), ...classes);
+		button.classList.add('scriptMenu_btnGap', this.getButtonColor(color), ...classes);
 		button.title = title;
 		button.addEventListener('click', onClick);
 		main.appendChild(button);
 
 		const buttonText = document.createElement('div');
-		buttonText.classList.add('scriptMenu_buttonText');
+		buttonText.classList.add('scriptMenu_btnPlate', this.getButtonColor(color));
 		buttonText.innerText = name;
 		button.appendChild(buttonText);
 
 		if (dot) {
-			const dotAtention = document.createElement('div');
-			dotAtention.classList.add('scriptMenu_dot');
-			dotAtention.title = dot;
-			button.appendChild(dotAtention);
+			this.addIndicator(button, dot);
+		}
+
+		if (isOneButton) {
+			this.btnSocket.appendChild(main);
+			//this.btnSocket.appendChild(main);
 		}
 
 		this.buttons.push(button);
@@ -5479,37 +5805,67 @@ class ScriptMenu extends EventEmitterMixin() {
 		return button;
 	}
 
-	addCombinedButton(buttonList, main = this.mainMenu) {
+	addCombinedButton(buttonList, main = this.btnSocket) {
 		this.emit('beforeAddCombinedButton', buttonList, main);
+		let back = null;
+		if (!this.btnSocket) {
+			back = main;
+			main = this.addBtnSocket(back);
+			this.btnSocket = main;
+		}
 		const buttonGroup = document.createElement('div');
-		buttonGroup.classList.add('scriptMenu_buttonGroup');
+		buttonGroup.classList.add('scriptMenu_btnRow');
 		let count = 0;
 
 		for (const btn of buttonList) {
 			btn.isCombine = true;
 			btn.classes ??= [];
 			if (count === 0) {
-				btn.classes.push('scriptMenu_combineButtonLeft');
+				btn.classes.push('left');
 			} else if (count === buttonList.length - 1) {
-				btn.classes.push('scriptMenu_combineButtonRight');
+				btn.classes.push('right');
 			} else {
-				btn.classes.push('scriptMenu_combineButtonCenter');
+				btn.classes.push('center');
 			}
 			this.addButton(btn, buttonGroup);
 			count++;
 		}
 
-		const dotAtention = document.createElement('div');
-		dotAtention.classList.add('scriptMenu_dot');
-		buttonGroup.appendChild(dotAtention);
+		this.addIndicator(buttonGroup);
 
-		main.appendChild(buttonGroup);
+		this.btnSocket.appendChild(buttonGroup);
 		this.emit('afterAddCombinedButton', buttonGroup, buttonList);
 		return buttonGroup;
 	}
 
+	addIndicator(btnSocket, title) {
+		const dotAtention = document.createElement('div');
+		dotAtention.classList.add('scriptMenu_dot');
+		dotAtention.title = title;
+		btnSocket.appendChild(dotAtention);
+		/*
+		const miniSocket = document.createElement('div');
+		miniSocket.classList.add('scriptMenu_miniSocket');
+
+		const miniGap = document.createElement('div');
+		miniGap.classList.add('scriptMenu_miniGap');
+		miniSocket.appendChild(miniGap);
+
+		const indicator = document.createElement('div');
+		indicator.classList.add('scriptMenu_indicator', 'scriptMenu_dot');
+		indicator.title = title;
+		indicator.innerHTML = '22';
+		miniGap.appendChild(indicator);
+
+		btnSocket.appendChild(miniSocket);
+		*/
+	}
+
 	addCheckbox(label, title, main = this.mainMenu) {
 		this.emit('beforeAddCheckbox', label, title, main);
+		if (this.btnSocket) {
+			this.btnSocket = null;
+		}
 		const divCheckbox = document.createElement('div');
 		divCheckbox.classList.add('scriptMenu_divInput');
 		divCheckbox.title = title;
@@ -5533,6 +5889,9 @@ class ScriptMenu extends EventEmitterMixin() {
 
 	addInputText(title, placeholder, main = this.mainMenu) {
 		this.emit('beforeAddCheckbox', title, placeholder, main);
+		if (this.btnSocket) {
+			this.btnSocket = null;
+		}
 		const divInputText = document.createElement('div');
 		divInputText.classList.add('scriptMenu_divInputText');
 		divInputText.title = title;
@@ -5551,6 +5910,9 @@ class ScriptMenu extends EventEmitterMixin() {
 
 	addDetails(summaryText, name = null) {
 		this.emit('beforeAddDetails', summaryText, name);
+		if (this.btnSocket) {
+			this.btnSocket = null;
+		}
 		const details = document.createElement('details');
 		details.classList.add('scriptMenu_Details');
 		this.mainMenu.appendChild(details);
@@ -11446,9 +11808,9 @@ function executeAutoBattle(resolve, reject) {
 			nameFuncStartBattle == 'bossAttack') {
 			const result = await popup.confirm(
 				I18N('BOSS_VICTORY_IMPOSSIBLE', { battles: results.length }), [
-				{ msg: I18N('BTN_CANCEL'), result: false, isCancel: true },
-				{ msg: I18N('BTN_DO_IT'), result: true },
-			])
+				{ msg: I18N('BTN_CANCEL'), result: false, isCancel: true, color: 'red' },
+				{ msg: I18N('BTN_DO_IT'), result: true, color: 'green' },
+			]);
 			if (result) {
 				setIsCancalBattle(false);
 				startBattle();
@@ -11466,9 +11828,10 @@ function executeAutoBattle(resolve, reject) {
 			`<br>${I18N('MAXIMUM')}: ` + maxCoeff.toLocaleString() +
 			`<br>${I18N('AVERAGE')}: ` + avgCoeff.toLocaleString() +
 			`<br>${I18N('FIND_COEFF')} ` + avgCoeff.toLocaleString(), [
-			{ msg: I18N('BTN_CANCEL'), result: 0, isCancel: true },
-			{ msg: I18N('BTN_GO'), isInput: true, default: Math.round(avgCoeff * 1000) / 1000 },
-		])
+				{ msg: I18N('BTN_CANCEL'), result: 0, isCancel: true, color: 'red' },
+				{ msg: I18N('BTN_GO'), isInput: true, default: Math.round(avgCoeff * 1000) / 1000, color: 'green' },
+			]
+		);
 		if (result) {
 			findCoeff = result;
 			setIsCancalBattle(false);
@@ -12130,8 +12493,8 @@ class dailyQuests {
 			const answer = await popup.confirm(
 				`${I18N('YOU_CAN_COMPLETE')}:`,
 				[
-					{ msg: I18N('BTN_DO_IT'), result: true },
-					{ msg: I18N('BTN_CANCEL'), result: false, isCancel: true },
+					{ msg: I18N('BTN_DO_IT'), result: true, color: 'green' },
+					{ msg: I18N('BTN_CANCEL'), result: false, isCancel: true, color: 'red' },
 				],
 				weCanDo
 			);
@@ -12718,9 +13081,11 @@ class doYourBest {
 		});
 
 		const answer = await popup.confirm(I18N('RUN_FUNCTION'), [
-			{ msg: I18N('BTN_CANCEL'), result: false, isCancel: true },
-			{ msg: I18N('BTN_GO'), result: true },
-		], this.funcList);
+				{ msg: I18N('BTN_CANCEL'), result: false, isCancel: true, color: 'red' },
+				{ msg: I18N('BTN_GO'), result: true, color: 'green' },
+			],
+			this.funcList
+		);
 
 		if (!answer) {
 			this.end('');
@@ -12873,12 +13238,14 @@ class executeAdventure {
 				msg: I18N('START_ADVENTURE'),
 				placeholder: '1,2,3,4,5,6',
 				isInput: true,
-				default: getSaveVal(keyPath, oldVal)
+				default: getSaveVal(keyPath, oldVal),
+				color: 'green',
 			},
 			{
 				msg: I18N('BTN_CANCEL'),
 				result: false,
-				isCancel: true
+				isCancel: true,
+				color: 'red',
 			},
 		]);
 		if (!answer) {
