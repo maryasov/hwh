@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.390.25-10-28-04-58
+// @version			2.390.25-10-28-17-08
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -12232,7 +12232,7 @@ class dailyQuests {
 			doItCall: () => [{ name: 'gacha_open', args: { ident: 'heroGacha', free: true, pack: false }, ident: 'gacha_open' }],
 			isWeCanDo: () => {
 				const soulCrystal = this.questInfo['inventoryGet'].coin[38];
-				return soulCrystal > 0;
+				return soulCrystal > 10;
 			},
 		},
 		10016: {
