@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.390.25-10-28-17-08
+// @version			2.395.25-11-01-21-11
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -593,6 +593,11 @@ const i18nLangData = {
 		EXTENSIONS: 'Extensions',
 		EXTENSIONS_TITLE: 'Extensions for the script',
 		EXTENSIONS_LIST_TITLE: 'Extensions for the script',
+		EVENT_IS_OVER: 'Event is over',
+		SET_COUNT_KILLS: 'Set the number of enemies that need to be killed today:',
+		MORE_ENEMIES_KILLED: 'Already killed more than {countKills} enemies',
+		RESTART_TRY_AGAIN_LATER: 'Restart the game and try again later',
+		ENEMIES_KILLED_AND_HEROES_USED: 'Number of enemies killed: {score}<br>Used {count} heroes',
 	},
 	ru: {
 		/* Чекбоксы */
@@ -965,6 +970,11 @@ const i18nLangData = {
 		EXTENSIONS: 'Расширения',
 		EXTENSIONS_TITLE: 'Расширения для скрипта',
 		EXTENSIONS_LIST_TITLE: 'Расширения для скрипта',
+		EVENT_IS_OVER: 'Эвент завершен',
+		SET_COUNT_KILLS: 'Задайте колличество врагов которых необходимо убить сегодня:',
+		MORE_ENEMIES_KILLED: 'Уже убито больше {countKills} врагов',
+		RESTART_TRY_AGAIN_LATER: 'Перезагрузите игру и попробуйте позже',
+		ENEMIES_KILLED_AND_HEROES_USED: 'Количество убитых врагов: {score}<br>Использовано {count} героев',
 	},
 };
 
@@ -1363,10 +1373,10 @@ const buttons = {
 		get name() { return I18N('FURNACE_OF_SOULS'); },
 		get title() { return I18N('ARCHDEMON_TITLE'); },
 		onClick: function () {
-			confShow(`${I18N('RUN_SCRIPT')} ${I18N('FURNACE_OF_SOULS')}?`, bossRatingEventSouls);
+			bossRatingEventSouls();
 		},
-		hide: true,
-		color: 'red',
+		hide: false,
+		color: 'orange',
 	},
 	extensions: {
 		get name() {
@@ -1674,7 +1684,7 @@ const othersPopupButtons = [
 				I18N('CURRENT_POWER', { power: heroSumPower.toLocaleString() }) +
 				'<br>' +
 				I18N('POWER_TO_MAX', { power: power.toLocaleString(), color: power >= 4000 ? 'green' : 'red' });
-			await popup.confirm(msg, [{ msg: I18N('BTN_OK'), result: 0 }]);
+			await popup.confirm(msg, [{ msg: I18N('BTN_OK'), result: 0, color: 'green' }]);
 		},
 		get title() {
 			return I18N('HERO_POWER_TITLE');
@@ -2271,7 +2281,6 @@ async function checkChangeSend(sourceData, tempData) {
 		 * Функция заменяющая данные боя на неверные для отмены боя
 		 */
 		const fixBattle = function (heroes) {
-                console.log('fix')
 			for (const ids in heroes) {
 				hero = heroes[ids];
 				hero.energy = random(1, 999);
@@ -2288,8 +2297,8 @@ async function checkChangeSend(sourceData, tempData) {
 		const showMsg = async function (msg, ansF, ansS) {
 			if (typeof popup == 'object') {
 				return await popup.confirm(msg, [
-					{msg: ansF, result: false},
-					{msg: ansS, result: true},
+					{ msg: ansF, result: false, color: 'green' },
+					{ msg: ansS, result: true, color: 'red' },
 				]);
 			} else {
 				return !confirm(`${msg}\n ${ansF} (${I18N('BTN_OK')})\n ${ansS} (${I18N('BTN_CANCEL')})`);
@@ -2302,8 +2311,8 @@ async function checkChangeSend(sourceData, tempData) {
 		 */
 		const showMsgs = async function (msg, ansF, ansS, ansT) {
 			return await popup.confirm(msg, [
-				{msg: ansF, result: 0},
-				{msg: ansS, result: 1},
+				{ msg: ansF, result: 0, color: 'green' },
+				{ msg: ansS, result: 1, color: 'red' },
 				{msg: ansT, result: 2},
 			]);
 		}
@@ -2314,20 +2323,6 @@ async function checkChangeSend(sourceData, tempData) {
 			if (!artifactChestOpen) {
 				requestHistory[this.uniqid].calls[call.name] = call.ident;
 			}
-            // console.log(call.name, isCancalBattle, call);
-            // if ((call.name == 'missionEnd') &&
-            //   isCancalBattle) {
-            //   nameFuncEndBattle = call.name;
-            //   resultPopup = await showMsg('test', I18N('BTN_OK'), I18N('BTN_CANCEL'), I18N('BTN_AUTO'));
-            //   if (resultPopup) {
-            //     fixBattle(call.args.progress[0].attackers.heroes);
-            //     fixBattle(call.args.progress[0].defenders.heroes);
-            //     changeRequest = true;
-            //     if (resultPopup > 1) {
-            //       this.onReadySuccess = testAutoBattle;
-            //     }
-            //   }
-            // }
 			/**
 			 * Cancellation of the battle in adventures, on VG and with minions of Asgard
 			 * Отмена боя в приключениях, на ВГ и с прислужниками Асгарда
@@ -2479,8 +2474,8 @@ async function checkChangeSend(sourceData, tempData) {
 					await popup.confirm(
 						I18N('START_AUTO_BRAWLS'),
 						[
-							{ msg: I18N('BTN_NO'), result: false },
-							{ msg: I18N('BTN_YES'), result: true },
+							{ msg: I18N('BTN_NO'), result: false, color: 'red' },
+							{ msg: I18N('BTN_YES'), result: true, color: 'green' },
 						],
 						[
 							{
@@ -2517,7 +2512,7 @@ async function checkChangeSend(sourceData, tempData) {
 				const resultPopup = await popup.confirm(
 					`${I18N('MSG_YOU_APPLIED')} ${lastDamage.toLocaleString()} ${I18N('MSG_DAMAGE')}.`,
 					[
-						{ msg: I18N('BTN_OK'), result: false },
+						{ msg: I18N('BTN_OK'), result: false, color: 'green' },
 						{ msg: I18N('BTN_AUTO_F5'), result: 1 },
 						//{ msg: I18N('BTN_TRY_FIX_IT'), result: 2 },
 						...testFunc,
@@ -2610,7 +2605,6 @@ async function checkChangeSend(sourceData, tempData) {
 			if (
 				call.name == 'clanWarAttack' ||
 				call.name == 'crossClanWar_startBattle' ||
-				// call.name == 'missionStart' ||
 				call.name == 'adventure_turnStartBattle' ||
 				call.name == 'adventureSolo_turnStartBattle' ||
 				call.name == 'bossAttack' ||
@@ -2705,8 +2699,8 @@ async function checkChangeSend(sourceData, tempData) {
 				let startTimer = false;
 				if (!call.args.result.win) {
 					startTimer = await popup.confirm(I18N('DEFEAT_TURN_TIMER'), [
-						{ msg: I18N('BTN_NO'), result: false },
-						{ msg: I18N('BTN_YES'), result: true },
+						{ msg: I18N('BTN_NO'), result: false, color: 'red' },
+						{ msg: I18N('BTN_YES'), result: true, color: 'green' },
 					]);
 				}
 
@@ -2726,29 +2720,6 @@ async function checkChangeSend(sourceData, tempData) {
 					this.errorRequest = true;
 				}
 			}
-			// if (call.name == 'missionEnd' && missionItemSearch) {
-			// 	let startTimer = false;
-               //   startTimer = await popup.confirm(I18N('DEFEAT_TURN_TIMER'), [
-               //     { msg: I18N('BTN_NO'), result: false },
-               //     { msg: I18N('BTN_YES'), result: true },
-               //   ]);
-               //
-			// 	if (startTimer) {
-			// 		missionBattle.progress = call.args.progress;
-			// 		missionBattle.result = call.args.result;
-			// 		const result = await Calc(missionBattle);
-               //
-			// 		let timer = result.battleTimer + addBattleTimer;
-			// 		const period = Math.ceil((Date.now() - lastMissionBattleStart) / 1000);
-			// 		if (period < timer) {
-			// 			timer = timer - period;
-			// 			await countdownTimer(timer);
-			// 		}
-			// 		missionBattle = null;
-			// 	} else {
-			// 		this.errorRequest = true;
-			// 	}
-			// }
 			/**
 			 * Getting mission data for auto-repeat
 			 * Получение данных миссии для автоповтора
@@ -2762,10 +2733,13 @@ async function checkChangeSend(sourceData, tempData) {
 					count: 0,
 				}
 				setTimeout(async () => {
-					if (!isSendsMission && await popup.confirm(I18N('MSG_REPEAT_MISSION'), [
-							{ msg: I18N('BTN_REPEAT'), result: true},
-							{ msg: I18N('BTN_NO'), result: false},
-						])) {
+					if (
+						!isSendsMission &&
+						(await popup.confirm(I18N('MSG_REPEAT_MISSION'), [
+							{ msg: I18N('BTN_REPEAT'), result: true, color: 'green' },
+							{ msg: I18N('BTN_NO'), result: false, color: 'red' },
+						]))
+					) {
 						isStopSendMission = false;
 						isSendsMission = true;
                               repeatItems = {}
@@ -2792,9 +2766,7 @@ async function checkChangeSend(sourceData, tempData) {
 				call.name == 'titanUseSummonCircle') &&
 				call.args.amount > 1) {
 				const startAmount = call.args.amount;
-				const result = await popup.confirm(I18N('MSG_SPECIFY_QUANT'), [
-					{ msg: I18N('BTN_OPEN'), isInput: true, default: 1},
-					]);
+				const result = await popup.confirm(I18N('MSG_SPECIFY_QUANT'), [{ msg: I18N('BTN_OPEN'), isInput: true, default: 1, color: 'green' }]);
 				if (result) {
 					const item = call.name == 'pet_chestOpen' ? { id: 90, type: 'consumable' } : { id: 13, type: 'coin' };
 					cheats.updateInventory({
@@ -2818,9 +2790,7 @@ async function checkChangeSend(sourceData, tempData) {
 				!changeRequest) {
 				artifactChestOpenCallName = call.name;
 				const startAmount = call.args.amount;
-				let result = await popup.confirm(I18N('MSG_SPECIFY_QUANT'), [
-					{ msg: I18N('BTN_OPEN'), isInput: true, default: 1 },
-				]);
+				let result = await popup.confirm(I18N('MSG_SPECIFY_QUANT'), [{ msg: I18N('BTN_OPEN'), isInput: true, default: 1, color: 'green' }]);
 				if (result) {
 					const openChests = result;
 					let sphere = result < 10 ? 1 : 10;
@@ -2863,7 +2833,7 @@ async function checkChangeSend(sourceData, tempData) {
 				if (isChecked('countControl') &&
 					((call.args.libId == 148 && call.args.amount > 1) || playerChoiceType === 'hero')) {
 					const result = await popup.confirm(I18N('MSG_SPECIFY_QUANT'), [
-						{ msg: I18N('BTN_OPEN'), isInput: true, default: call.args.amount},
+						{ msg: I18N('BTN_OPEN'), isInput: true, default: call.args.amount, color: 'green' },
 					]);
 					call.args.amount = result;
 					changeRequest = true;
@@ -3121,13 +3091,11 @@ async function checkChangeResponse(response) {
 			 * Start of the battle for recalculation
 			 * Начало боя для прерасчета
 			 */
-               // console.log('miss start', call.ident)
 			if (call.ident == callsIdent['clanWarAttack'] ||
 				call.ident == callsIdent['crossClanWar_startBattle'] ||
 				call.ident == callsIdent['bossAttack'] ||
 				call.ident == callsIdent['battleGetReplay'] ||
 				call.ident == callsIdent['brawl_startBattle'] ||
-				// call.ident == callsIdent['missionStart'] ||
 				call.ident == callsIdent['adventureSolo_turnStartBattle'] ||
 				call.ident == callsIdent['invasion_bossStart'] ||
 				call.ident == callsIdent['titanArenaStartBattle'] ||
@@ -3140,34 +3108,11 @@ async function checkChangeResponse(response) {
 					call.ident == callsIdent['towerStartBattle'] ||
 					call.ident == callsIdent['invasion_bossStart']) {
 					battle = call.result.response;
-
 				}
                    if (false && call.ident == callsIdent['missionStart']) {
                      console.log('missionStart call', call)
                      battle = call.result.response;
                      missionItems = {}
-                     // if (isChecked('repeatMissionSearch')) {
-                     //   const answer = await popup.confirm('Искать предмет', [
-                     //     {
-                     //       msg: 'Предмет',
-                     //       placeholder: 'что искать',
-                     //       isInput: true,
-                     //       default: ''
-                     //     },
-                     //     {
-                     //       msg: I18N('BTN_CANCEL'),
-                     //       result: false,
-                     //       isCancel: true
-                     //     },
-                     //   ]);
-                     //   missionItemSearch = answer
-                     //   if (answer) {
-                     //     isChange = true;
-                     //     setIsCancalBattle(true);
-                     //     savedStart = call
-                     //   }
-                     // }
-
                    }
 				lastBattleInfo = battle;
 				if (call.ident == callsIdent['battleGetReplay'] && call.result.response.replay.type ===	"clan_raid") {
@@ -3355,8 +3300,8 @@ async function checkChangeResponse(response) {
 				if (
 					newCount &&
 					(await popup.confirm(`${I18N('BTN_OPEN')} ${newCount} ${I18N('OPEN_DOLLS')}?`, [
-						{ msg: I18N('BTN_OPEN'), result: true },
-						{ msg: I18N('BTN_NO'), result: false, isClose: true },
+						{ msg: I18N('BTN_OPEN'), result: true, color: 'green' },
+						{ msg: I18N('BTN_NO'), result: false, isClose: true, color: 'red' },
 					]))
 				) {
 					const [count, recursionResult] = await openRussianDolls(lastRussianDollId, newCount);
@@ -3368,8 +3313,8 @@ async function checkChangeResponse(response) {
 				if (this.massOpen) {
 					if (
 						await popup.confirm(I18N('OPEN_ALL_EQUIP_BOXES'), [
-							{ msg: I18N('BTN_OPEN'), result: true },
-							{ msg: I18N('BTN_NO'), result: false, isClose: true },
+							{ msg: I18N('BTN_OPEN'), result: true, color: 'green' },
+							{ msg: I18N('BTN_NO'), result: false, isClose: true, color: 'red' },
 						])
 					) {
 						const consumable = await Send({ calls: [{ name: 'inventoryGet', args: {}, ident: 'inventoryGet' }] }).then((e) =>
@@ -3544,7 +3489,7 @@ async function checkChangeResponse(response) {
 								msg += cheats.translate('LIB_PSEUDO_STARMONEY') + `: ${starmoney}<br>`;
 							}
 
-							await popup.confirm(msg, [{ msg: I18N('BTN_OK'), result: 0 }]);
+							await popup.confirm(msg, [{ msg: I18N('BTN_OK'), result: 0, color: 'green' }]);
 						});
 				}
 			}
@@ -4572,7 +4517,6 @@ const popup = new (function () {
 		justify-content: space-evenly;
 		align-items: center;
 		flex-wrap: wrap;
-		justify-content: center;
 	}
 
 	.PopUp_blocks:last-child {
@@ -4655,6 +4599,7 @@ const popup = new (function () {
 		text-align: center;
 		color: #FDE5B6;
 		text-shadow: 0px 0px 2px;
+		margin: 0 20px;
 	}
 
 	.PopUp_hideBlock {
@@ -4753,6 +4698,7 @@ const popup = new (function () {
 			8px -7px 15px 0px hsla(var(--h), 94%, 15%, 0.7) inset,
 			0px 0px 2px 0px hsl(var(--h), 68%, 23%),
 			0px -3px 8px 0px hsl(var(--h), 94%, 20%) inset;
+		min-width: 65px;
 	}
 	.PopUp_btnPlate:hover {
 		color: hsla(0, 0%, 96%, 1);
@@ -5071,7 +5017,7 @@ const popup = new (function () {
 		return new Promise((complete, failed) => {
 			this.setMsgText(msg);
 			if (!buttOpt) {
-				buttOpt = [{ msg: 'Ok', result: true, isInput: false }];
+				buttOpt = [{ msg: 'Ok', result: true, isInput: false, color: 'green' }];
 			}
 			for (const checkBox of checkBoxes) {
 				this.addCheckBox(checkBox);
@@ -7173,7 +7119,7 @@ function executeTower(resolve, reject) {
 			return;
 		}
 		if ('reward' in battleResult) {
-            console.log('resultEndBattle', battleResult.reward)
+               console.log('resultEndBattle', battleResult.reward)
 			scullCoin += battleResult.reward?.coin[7] ?? 0;
 		}
 		nextFloor();
@@ -9066,8 +9012,10 @@ this.sendsMission = async function (param) {
 		setProgress('');
 		await popup.confirm(`${I18N('STOPPED')}<br>${rewardText(repeatItems, knownItems)}${I18N('REPETITIONS')}: ${param.count}`, [{
 			msg: 'Ok',
-			result: true
-		}, ])
+				result: true,
+				color: 'green',
+			},
+		]);
 	}
 	if (isStopSendMission) {
 		stopMission();
@@ -9092,9 +9040,7 @@ this.sendsMission = async function (param) {
 			console.log(e['error']);
 			setProgress('');
 			let msg = e['error'].name + ' ' + e['error'].description + `<br>${rewardText(repeatItems, knownItems)}${I18N('REPETITIONS')}: ${param.count}`;
-			await popup.confirm(msg, [
-				{msg: 'Ok', result: true},
-			])
+               await popup.confirm(msg, [{ msg: 'Ok', result: true, color: 'green' }]);
 			return;
 		}
 		/**
@@ -9111,7 +9057,6 @@ this.sendsMission = async function (param) {
 				timer = timer - period;
                     // TD вывод индикатора
                     // текст для списка лута missionItems
-                    //const
                     pushReward(r.battleData.reward, true)
                     //console.log('BattleCalc reward', r.battleData.reward)
 
@@ -9148,25 +9093,22 @@ this.sendsMission = async function (param) {
 					console.log(e['error'], missionItems);
 					setProgress('');
 					let msg = e['error'].name + ' ' + e['error'].description + `<br>${I18N('REPETITIONS')}: ${param.count}`;
-					await popup.confirm(msg, [
-						{msg: 'Ok', result: true},
-					])
+					await popup.confirm(msg, [{ msg: 'Ok', result: true, color: 'green' }]);
 					return;
 				}
 				r = e.results[0].result.response;
 				if (r['error']) {
-                         console.trace('missionEndCall r', r)
 					isSendsMission = false;
 					console.log(r['error']);
 					setProgress('');
 					await popup.confirm(`<br>${I18N('REPETITIONS')}: ${param.count}` + ' 3 ' + r['error'], [
-						{msg: 'Ok', result: true},
-					])
+						{ msg: 'Ok', result: true, color: 'green' },
+					]);
 					return;
 				}
 
 				param.count++;
-                // TD вывод остановки
+                    // TD вывод остановки
 				setProgress(`${I18N('MISSIONS_PASSED')}: ${param.count} (${I18N('STOP')})`, false, () => {
 					isStopSendMission = true;
 				});
@@ -9498,7 +9440,7 @@ async function farmStamina(lootBoxId = 148) {
 	let maxFarmEnergy = getSaveVal('maxFarmEnergy', 100);
 	const result = await popup.confirm(I18N('OPEN_LOOTBOX', { lootBox }), [
 		{ result: false, isClose: true },
-		{ msg: I18N('BTN_YES'), result: true },
+		{ msg: I18N('BTN_YES'), result: true, color: 'green' },
 		{ msg: I18N('STAMINA'), isInput: true, default: maxFarmEnergy },
 	]);
 
@@ -9580,7 +9522,7 @@ async function fillActive() {
 
 	countGetActive = +(await popup.confirm(I18N('EXCHANGE_ITEMS', { maxActive }), [
 		{ result: false, isClose: true },
-		{ msg: I18N('GET_ACTIVITY'), isInput: true, default: countGetActive.toString() },
+		{ msg: I18N('GET_ACTIVITY'), isInput: true, default: countGetActive.toString(), color: 'green' },
 	]));
 
 	if (!countGetActive) {
@@ -9748,6 +9690,7 @@ async function bossOpenChestPay() {
 		buttons.push({
 			msg: I18N('BUY_OUTLAND_BTN', { count: 9, countEmerald: cost9chests, imgEmerald }),
 			result: [costFirstChest, costFirstChest, 0],
+			color: 'green',
 		});
 	}
 
@@ -9755,6 +9698,7 @@ async function bossOpenChestPay() {
 		buttons.push({
 			msg: I18N('BUY_OUTLAND_BTN', { count: 18, countEmerald: cost18chests, imgEmerald }),
 			result: [costFirstChest, costFirstChest, 0, costSecondChest, costSecondChest, 0],
+			color: 'green',
 		});
 	}
 
@@ -9833,7 +9777,7 @@ async function autoRaidAdventure() {
 
 	const countRaid = +(await popup.confirm(I18N('RAID_ADVENTURE', { adventureId }), [
 		{ result: false, isClose: true },
-		{ msg: I18N('RAID'), isInput: true, default: portalSphere.amount },
+		{ msg: I18N('RAID'), isInput: true, default: portalSphere.amount, color: 'green' },
 	]));
 
 	if (!countRaid) {
@@ -10335,31 +10279,33 @@ this.HWHFuncs.countdownTimer = countdownTimer;
 
 /** Набить килов в горниле душк */
 async function bossRatingEventSouls() {
-	const data = await Send({
-		calls: [
-			{ name: "heroGetAll", args: {}, ident: "teamGetAll" },
-			{ name: "offerGetAll", args: {}, ident: "offerGetAll" },
-			{ name: "pet_getAll", args: {}, ident: "pet_getAll" },
-		]
-	});
-	const bossEventInfo = data.results[1].result.response.find(e => e.offerType == "bossEvent");
+	const [heroGetAll, offerGetAll, pet_getAll] = await Caller.send(['heroGetAll', 'offerGetAll', 'pet_getAll']);
+	let bossEventInfo = offerGetAll.find((e) => e.offerType == 'bossEvent');
 	if (!bossEventInfo) {
-		setProgress('Эвент завершен', true);
+		setProgress(I18N('EVENT_IS_OVER'), true);
 		return;
 	}
 
-	if (bossEventInfo.progress.score > 250) {
-		setProgress('Уже убито больше 250 врагов');
-		rewardBossRatingEventSouls();
+	const countKills = +(await popup.confirm(I18N('SET_COUNT_KILLS'), [
+		{ msg: I18N('BTN_GO'), isInput: true, default: 250, color: 'green' },
+		{ result: false, isClose: true },
+	]));
+
+	if (!countKills) {
 		return;
 	}
-	const availablePets = Object.values(data.results[2].result.response).map(e => e.id);
-	const heroGetAllList = data.results[0].result.response;
+
+	if (bossEventInfo.progress.score > countKills) {
+		setProgress(I18N('MORE_ENEMIES_KILLED', { countKills }));
+		setTimeout(rewardBossRatingEventSouls, 2500, bossEventInfo);
+		return;
+	}
+	const availablePets = Object.values(pet_getAll).map((e) => e.id);
 	const usedHeroes = bossEventInfo.progress.usedHeroes;
 	const heroList = [];
 
-	for (let heroId in heroGetAllList) {
-		let hero = heroGetAllList[heroId];
+	for (let heroId in heroGetAll) {
+		let hero = heroGetAll[heroId];
 		if (usedHeroes.includes(hero.id)) {
 			continue;
 		}
@@ -10367,7 +10313,7 @@ async function bossRatingEventSouls() {
 	}
 
 	if (!heroList.length) {
-		setProgress('Нет героев', true);
+		setProgress(I18N('NO_HEROES'), true);
 		return;
 	}
 
@@ -10378,57 +10324,47 @@ async function bossRatingEventSouls() {
 	for (const heroId of heroList) {
 		const args = {
 			heroes: [heroId],
-			pet
-		}
+			pet,
+		};
 		/** Поиск питомца для героя */
 		for (const petId of availablePets) {
 			if (petLib[petId].favorHeroes.includes(heroId)) {
 				args.favor = {
-					[heroId]: petId
-				}
+					[heroId]: petId,
+				};
 				break;
 			}
 		}
 
-		const calls = [{
-			name: "bossRatingEvent_startBattle",
+		let battleInfo, offerGetAll;
+		try {
+			[battleInfo, offerGetAll] = await Caller.send([
+				{
+					name: 'bossRating_startBattle',
 			args,
-			ident: "body"
-		}, {
-			name: "offerGetAll",
-			args: {},
-			ident: "offerGetAll"
-		}];
-
-		const res = await Send({ calls });
+				},
+				'offerGetAll',
+			]);
 		count++;
-
-		if ('error' in res) {
-			console.error(res.error);
-			setProgress('Перезагрузите игру и попробуйте позже', true);
+		} catch(e) {
+			console.error(e);
+			setProgress(I18N('RESTART_TRY_AGAIN_LATER'), true);
 			return;
 		}
 
-		const eventInfo = res.results[1].result.response.find(e => e.offerType == "bossEvent");
-		if (eventInfo.progress.score > 250) {
+		bossEventInfo = offerGetAll.find((e) => e.offerType == 'bossEvent');
+		if (bossEventInfo.progress.score > countKills) {
 			break;
 		}
-		setProgress('Количество убитых врагов: ' + eventInfo.progress.score + '<br>Использовано ' + count + ' героев');
+		setProgress(I18N('ENEMIES_KILLED_AND_HEROES_USED', { score: bossEventInfo.progress.score, count }));
 	}
 
-	rewardBossRatingEventSouls();
+	rewardBossRatingEventSouls(bossEventInfo);
 }
 /** Сбор награды из Горнила Душ */
-async function rewardBossRatingEventSouls() {
-	const data = await Send({
-		calls: [
-			{ name: "offerGetAll", args: {}, ident: "offerGetAll" }
-		]
-	});
-
-	const bossEventInfo = data.results[0].result.response.find(e => e.offerType == "bossEvent");
+async function rewardBossRatingEventSouls(bossEventInfo) {
 	if (!bossEventInfo) {
-		setProgress('Эвент завершен', true);
+		setProgress(I18N('EVENT_IS_OVER'), true);
 		return;
 	}
 
@@ -10436,9 +10372,8 @@ async function rewardBossRatingEventSouls() {
 	const score = bossEventInfo.progress.score;
 	// setProgress('Количество убитых врагов: ' + score);
 	const revard = bossEventInfo.reward;
-	const calls = [];
 
-	let count = 0;
+	const caller = new Caller();
 	for (let i = 1; i < 10; i++) {
 		if (farmedChests.includes(i)) {
 			continue;
@@ -10446,24 +10381,31 @@ async function rewardBossRatingEventSouls() {
 		if (score < revard[i].score) {
 			break;
 		}
-		calls.push({
-			name: "bossRatingEvent_getReward",
+		caller.add({
+			name: 'bossRating_getReward',
 			args: {
-				rewardId: i
+				rewardId: i,
 			},
-			ident: "body_" + i
 		});
-		count++;
 	}
-	if (!count) {
-		setProgress('Нечего собирать', true);
+
+	if (caller.isEmpty()) {
+		setProgress(I18N('NOTHING_TO_COLLECT'), true);
+		return;
+	}
+	try {
+		await caller.send()
+	} catch(e) {
+		console.error(e);
+		setProgress(I18N('RESTART_TRY_AGAIN_LATER'), true);
 		return;
 	}
 
-	Send({ calls }).then(e => {
-		console.log(e);
-		setProgress('Собрано ' + e?.results?.length + ' наград', true);
-	})
+	const results = caller.result(false, true);
+	console.log(results);
+	if (results?.length) {
+		setProgress(`${I18N('COLLECTED')} ${results?.length} ${I18N('REWARD')}`, true);
+	}
 }
 /**
  * Spin the Seer
@@ -10516,10 +10458,10 @@ function getGiftNewYear() {
 }
 
 async function updateArtifacts() {
-	const count = +await popup.confirm(I18N('SET_NUMBER_LEVELS'), [
-		{ msg: I18N('BTN_GO'), isInput: true, default: 10 },
-		{ result: false, isClose: true }
-	]);
+	const count = +(await popup.confirm(I18N('SET_NUMBER_LEVELS'), [
+		{ msg: I18N('BTN_GO'), isInput: true, default: 10, color: 'green' },
+		{ result: false, isClose: true },
+	]));
 	if (!count) {
 		return;
 	}
@@ -10532,7 +10474,7 @@ async function updateArtifacts() {
 		const upArtifact = quest.getUpgradeArtifact();
 		if (!upArtifact.heroId) {
 			if (await popup.confirm(I18N('POSSIBLE_IMPROVE_LEVELS', { count: calls.length }), [
-				{ msg: I18N('YES'), result: true },
+				{ msg: I18N('YES'), result: true, color: 'green' },
 				{ result: false, isClose: true }
 			])) {
 				break;
@@ -10576,10 +10518,10 @@ window.sign = a => {
 }
 
 async function updateSkins() {
-	const count = +await popup.confirm(I18N('SET_NUMBER_LEVELS'), [
-		{ msg: I18N('BTN_GO'), isInput: true, default: 10 },
-		{ result: false, isClose: true }
-	]);
+	const count = +(await popup.confirm(I18N('SET_NUMBER_LEVELS'), [
+		{ msg: I18N('BTN_GO'), isInput: true, default: 10, color: 'green' },
+		{ result: false, isClose: true },
+	]));
 	if (!count) {
 		return;
 	}
@@ -10593,7 +10535,7 @@ async function updateSkins() {
 		const upSkin = quest.getUpgradeSkin();
 		if (!upSkin.heroId) {
 			if (await popup.confirm(I18N('POSSIBLE_IMPROVE_LEVELS', { count: calls.length }), [
-				{ msg: I18N('YES'), result: true },
+				{ msg: I18N('YES'), result: true, color: 'green' },
 				{ result: false, isClose: true }
 			])) {
 				break;
@@ -10871,9 +10813,10 @@ function executeRaidNodes(resolve, reject) {
 
 		if (isNotFullPack) {
 			if (await popup.confirm(I18N('MINIONS_WARNING'), [
-				{ msg: I18N('BTN_NO'), result: true },
-				{ msg: I18N('BTN_YES'), result: false },
-			])) {
+					{ msg: I18N('BTN_NO'), result: true, color: 'red' },
+					{ msg: I18N('BTN_YES'), result: false, color: 'green' },
+				])
+			) {
 				endRaidNodes('isNotFullPack');
 				return;
 			}
@@ -11131,10 +11074,10 @@ function executeBossBattle(resolve, reject) {
 			`${I18N('ROUND_STAT')} ${damages.length} ${I18N('BATTLE')}:` +
 			`<br>${I18N('MINIMUM')}: ` + minDamage.toLocaleString() +
 			`<br>${I18N('MAXIMUM')}: ` + maxDamage.toLocaleString() +
-			`<br>${I18N('AVERAGE')}: ` + avgDamage.toLocaleString()
-			, [
-				{ msg: I18N('BTN_OK'), result: 0},
-			])
+				`<br>${I18N('AVERAGE')}: ` +
+				avgDamage.toLocaleString(),
+			[{ msg: I18N('BTN_OK'), result: 0, color: 'green' }]
+		);
 		endBossBattle(I18N('BTN_CANCEL'));
 	}
 
@@ -11926,7 +11869,7 @@ function executeAutoBattle(resolve, reject) {
 				return;
 			}
 			const result = await popup.confirm(I18N('ERROR_DURING_THE_BATTLE') + '<br>' + e.error.description, [
-				{ msg: I18N('BTN_OK'), result: false },
+				{ msg: I18N('BTN_OK'), result: false, color: 'green' },
 				{ msg: I18N('RELOAD_GAME'), result: true },
 			]);
 			endAutoBattle('Error', e.error);
@@ -11937,7 +11880,6 @@ function executeAutoBattle(resolve, reject) {
 		}
 		let battle = e.results[0].result.response.battle
 		if (nameFuncStartBattle == 'towerStartBattle' ||
-			// nameFuncStartBattle == 'missionStart' ||
 			nameFuncStartBattle == 'bossAttack' ||
 			nameFuncStartBattle == 'invasion_bossStart') {
 			battle = e.results[0].result.response;
@@ -11972,7 +11914,7 @@ function executeAutoBattle(resolve, reject) {
 
 				let winTimer = await popup.confirm(`Secret number:`, [
 					{ result: false, isClose: true },
-					{ msg: 'Go', isInput: true, default: timer },
+					{ msg: 'Go', isInput: true, default: timer, color: 'green' },
 				]);
 				winTimer = Number.parseFloat(winTimer);
 				if (winTimer) {
@@ -12016,7 +11958,6 @@ function executeAutoBattle(resolve, reject) {
 		}
 		if (nameFuncStartBattle == 'towerStartBattle' ||
 			nameFuncStartBattle == 'bossAttack' ||
-			// nameFuncStartBattle == 'missionStart' ||
 			nameFuncStartBattle == 'invasion_bossStart') {
 			startBattle();
 			return;
@@ -12102,7 +12043,7 @@ function executeAutoBattle(resolve, reject) {
 						winTimer,
 					}),
 					[
-						{ msg: I18N('BTN_OK'), result: 0 },
+						{ msg: I18N('BTN_OK'), result: 0, color: 'green' },
 						{ msg: I18N('MAKE_A_SYNC'), result: 1 },
 						{ msg: I18N('RELOAD_GAME'), result: 2 },
 					]
@@ -13105,9 +13046,10 @@ class doYourBest {
 					setProgress(`${task.label} <br>${I18N('DONE')}!`);
 				} catch (error) {
 					if (await popup.confirm(`${I18N('ERRORS_OCCURRES')}:<br> ${task.label} <br>${I18N('COPY_ERROR')}?`, [
-						{ msg: I18N('BTN_NO'), result: false },
-						{ msg: I18N('BTN_YES'), result: true },
-					])) {
+							{ msg: I18N('BTN_NO'), result: false, color: 'red' },
+							{ msg: I18N('BTN_YES'), result: true, color: 'green' },
+						])
+					) {
 						this.errorHandling(error);
 					}
 				}
@@ -13342,11 +13284,13 @@ class executeAdventure {
 			return this.end();
 		}
 		this.path = this.path.slice(position);
-		if ((this.path.length - 1) > this.turnsLeft &&
-			await popup.confirm(I18N('ATTEMPTS_NOT_ENOUGH'), [
-				{ msg: I18N('YES_CONTINUE'), result: false },
-				{ msg: I18N('BTN_NO'), result: true },
-			])) {
+		if (
+			this.path.length - 1 > this.turnsLeft &&
+			(await popup.confirm(I18N('ATTEMPTS_NOT_ENOUGH'), [
+				{ msg: I18N('YES_CONTINUE'), result: false, color: 'green' },
+				{ msg: I18N('BTN_NO'), result: true, color: 'red' },
+			]))
+		) {
 			this.terminatеReason = I18N('NOT_ENOUGH_AP');
 			return this.end();
 		}
@@ -13457,9 +13401,10 @@ class executeAdventure {
 		} catch (error) {
 			console.error(error);
 			if (await popup.confirm(I18N('ERROR_OF_THE_BATTLE_COPY'), [
-				{ msg: I18N('BTN_NO'), result: false },
-				{ msg: I18N('BTN_YES'), result: true },
-			])) {
+					{ msg: I18N('BTN_NO'), result: false, color: 'red' },
+					{ msg: I18N('BTN_YES'), result: true, color: 'green' },
+				])
+			) {
 				this.errorHandling(error, data);
 			}
 			this.terminatеReason = I18N('ERROR_DURING_THE_BATTLE');
