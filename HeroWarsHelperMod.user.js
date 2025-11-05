@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.395.25-11-01-21-11
+// @version			2.396.25-11-05-13-45
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2117,6 +2117,8 @@ XMLHttpRequest.prototype.send = async function (sourceData) {
 			if (isChecked('buyForGold')) {
 				buyInStoreForGold();
 			}
+
+			Events.emit('startGame', this);
 		}
 		/**
 		 * Outgoing request data processing
@@ -5157,6 +5159,10 @@ const EventEmitterMixin = (BaseClass = Object) =>
 	};
 
 this.HWHFuncs.EventEmitterMixin = EventEmitterMixin;
+
+class GlobalEventHub extends EventEmitterMixin() {}
+const Events = new GlobalEventHub();
+this.HWHFuncs.Events = Events;
 
 /**
  * Script control panel
