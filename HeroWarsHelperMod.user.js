@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.396.25-11-05-13-45
+// @version			2.411.25-11-18-14-10
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -272,7 +272,6 @@ const i18nLangData = {
 		SYNC: 'Sync',
 		SYNC_TITLE: 'Partial synchronization of game data without reloading the page',
 		ARCHDEMON: 'Archdemon',
-		FURNACE_OF_SOULS: 'Furnace of souls',
 		ARCHDEMON_TITLE: 'Hitting kills and collecting rewards',
 		ESTER_EGGS: 'Easter eggs',
 		ESTER_EGGS_TITLE: 'Collect all Easter eggs or rewards',
@@ -579,7 +578,6 @@ const i18nLangData = {
 		SELL_HERO_SOULS: 'Sell ​​souls',
 		SELL_HERO_SOULS_TITLE: 'Exchanges all absolute star hero souls for gold',
 		GOLD_RECEIVED: 'Gold received: {gold}',
-		OPEN_ALL_EQUIP_BOXES: 'Open all Equipment Fragment Box?',
 		SERVER_NOT_ACCEPT: 'The server did not accept the result',
 		INVASION_BOSS_BUFF: 'For {bossLvl} boss need buff {needBuff} you have {haveBuff}',
 		HERO_POWER: 'Hero Power',
@@ -598,6 +596,10 @@ const i18nLangData = {
 		MORE_ENEMIES_KILLED: 'Already killed more than {countKills} enemies',
 		RESTART_TRY_AGAIN_LATER: 'Restart the game and try again later',
 		ENEMIES_KILLED_AND_HEROES_USED: 'Number of enemies killed: {score}<br>Used {count} heroes',
+		FURNACE_OF_SOULS: 'Furnace',
+		PUMPKINS: 'Pumps',
+		PUMPKINS_TITLE: 'Exchange all Ghost Energy for Spirit Festival Coins',
+		PUMPKINS_RUN: 'Exchange all Ghost Energy for Spirit Festival Coins?',
 	},
 	ru: {
 		/* Чекбоксы */
@@ -650,7 +652,6 @@ const i18nLangData = {
 		SYNC: 'Синхронизация',
 		SYNC_TITLE: 'Частичная синхронизация данных игры без перезагрузки сатраницы',
 		ARCHDEMON: 'Архидемон',
-		FURNACE_OF_SOULS: 'Горнило душ',
 		ARCHDEMON_TITLE: 'Набивает килы и собирает награду',
 		ESTER_EGGS: 'Пасхалки',
 		ESTER_EGGS_TITLE: 'Собрать все пасхалки или награды',
@@ -956,7 +957,6 @@ const i18nLangData = {
 		SELL_HERO_SOULS: 'Продать души',
 		SELL_HERO_SOULS_TITLE: 'Обменивает все души героев с абсолютной звездой на золото',
 		GOLD_RECEIVED: 'Получено золота: {gold}',
-		OPEN_ALL_EQUIP_BOXES: 'Открыть все ящики фрагментов экипировки?',
 		SERVER_NOT_ACCEPT: 'Сервер не принял результат',
 		INVASION_BOSS_BUFF: 'Для {bossLvl} босса нужен баф {needBuff} у вас {haveBuff}',
 		HERO_POWER: 'Сила героев',
@@ -975,6 +975,10 @@ const i18nLangData = {
 		MORE_ENEMIES_KILLED: 'Уже убито больше {countKills} врагов',
 		RESTART_TRY_AGAIN_LATER: 'Перезагрузите игру и попробуйте позже',
 		ENEMIES_KILLED_AND_HEROES_USED: 'Количество убитых врагов: {score}<br>Использовано {count} героев',
+		FURNACE_OF_SOULS: 'Горнило',
+		PUMPKINS: 'Тыквы!',
+		PUMPKINS_TITLE: 'Обмен всей Призрачной энергии на Монеты Фестиваля Духов',
+		PUMPKINS_RUN: 'Обменять всю Призрачную энергию на Монеты Фестиваля Духов?',
 	},
 };
 
@@ -1005,7 +1009,7 @@ this.I18N = function (constant, replace) {
 	}
 	console.warn('Language constant not found', {constant, replace});
 	if (i18nLangData['en'][constant]) {
-		const result = i18nLangData[selectLang][constant];
+		const result = i18nLangData['en'][constant];
 		if (replace) {
 			return result.sprintf(replace);
 		}
@@ -1370,13 +1374,41 @@ const buttons = {
 	},
 	// Горнило душ
 	bossRatingEventSouls: {
+		isCombine: true,
+		hide: true,
+		combineList: [
+			{
 		get name() { return I18N('FURNACE_OF_SOULS'); },
 		get title() { return I18N('ARCHDEMON_TITLE'); },
 		onClick: function () {
 			bossRatingEventSouls();
 		},
-		hide: false,
 		color: 'orange',
+	},
+			{
+				get name() {
+					return I18N('PUMPKINS');
+				},
+				get title() {
+					return I18N('PUMPKINS_TITLE');
+				},
+				onClick: function () {
+					confShow(I18N('PUMPKINS_RUN'), async () => {
+						const coins = (
+							await Caller.send(
+								[...Array(Math.floor((await Caller.send('inventoryGet').then((e) => e.coin[22])) / 250))].map(() => ({
+									name: 'lootBoxBuy',
+									args: { box: 'boxHalloween2025', offerId: 2035, price: 'openCoin' },
+								}))
+							).then((e) => e.map((n) => n[0]).filter((r) => r?.coin && r.coin[23]))
+						).length;
+						confShow(`${I18N('RECEIVED')} ${coins} ${cheats.translate('LIB_COIN_NAME_23')}`);
+						cheats.refreshInventory();
+					});
+				},
+				color: 'green',
+			},
+		],
 	},
 	extensions: {
 		get name() {
@@ -1870,18 +1902,7 @@ let lastQuestion = null;
  * Ответ на последний вопрос викторины
  */
 let lastAnswer = null;
-/**
- * Flag for opening keys or titan artifact spheres
- *
- * Флаг открытия ключей или сфер артефактов титанов
- */
-let artifactChestOpen = false;
-/**
- * The name of the function to open keys or orbs of titan artifacts
- *
- * Имя функции открытия ключей или сфер артефактов титанов
- */
-let artifactChestOpenCallName = '';
+
 let correctShowOpenArtifact = 0;
 /**
  * Data for the last battle in the dungeon
@@ -2002,15 +2023,28 @@ WebSocket.prototype.send = function (data) {
 	if (!this.isSetOnMessage) {
 		const oldOnmessage = this.onmessage;
 		this.onmessage = function (event) {
+			let parsedData = null;
+			let messageType = null;
+
 			try {
-				const data = JSON.parse(event.data);
-				if (!this.isWebSocketLogin && data.result.type == "iframeEvent.login") {
+				parsedData = JSON.parse(event.data);
+				messageType = parsedData?.result?.type;
+			} catch (e) {}
+
+			if (parsedData) {
+				if (!this.isWebSocketLogin && messageType === 'iframeEvent.login') {
 					this.isWebSocketLogin = true;
-				} else if (data.result.type == "iframeEvent.login") {
+				} else if (messageType === 'iframeEvent.login') {
 					return;
 				}
-			} catch (e) { }
+			}
+
+			// Вызов обработчиков
+			Events.emit('WSMessage', messageType, parsedData?.result, event);
+
+			if (typeof oldOnmessage === 'function') {
 			return oldOnmessage.apply(this, arguments);
+		}
 		}
 		this.isSetOnMessage = true;
 	}
@@ -2322,9 +2356,7 @@ async function checkChangeSend(sourceData, tempData) {
 		let changeRequest = false;
 		const testData = JSON.parse(tempData);
 		for (const call of testData.calls) {
-			if (!artifactChestOpen) {
 				requestHistory[this.uniqid].calls[call.name] = call.ident;
-			}
 			/**
 			 * Cancellation of the battle in adventures, on VG and with minions of Asgard
 			 * Отмена боя в приключениях, на ВГ и с прислужниками Асгарда
@@ -2765,12 +2797,29 @@ async function checkChangeSend(sourceData, tempData) {
 			 */
 			if (isChecked('countControl') &&
 				(call.name == 'pet_chestOpen' ||
-				call.name == 'titanUseSummonCircle') &&
+				call.name == 'titanUseSummonCircle' ||
+				call.name == 'artifactChestOpen' ||
+				call.name == 'titanArtifactChestOpen') &&
 				call.args.amount > 1) {
 				const startAmount = call.args.amount;
 				const result = await popup.confirm(I18N('MSG_SPECIFY_QUANT'), [{ msg: I18N('BTN_OPEN'), isInput: true, default: 1, color: 'green' }]);
 				if (result) {
-					const item = call.name == 'pet_chestOpen' ? { id: 90, type: 'consumable' } : { id: 13, type: 'coin' };
+					let item = { id: 0, type: 'consumable' };
+					switch (call.name) {
+						case 'titanUseSummonCircle':
+							item.id = 13;
+							item.type = 'coin';
+							break;
+						case 'pet_chestOpen':
+							item.id = 90;
+							break;
+						case 'artifactChestOpen':
+							item.id = 45;
+							break;
+						case 'titanArtifactChestOpen':
+							item.id = 55;
+							break;
+					}
 					cheats.updateInventory({
 						[item.type]: {
 							[item.id]: -(result - startAmount),
@@ -2778,50 +2827,11 @@ async function checkChangeSend(sourceData, tempData) {
 					});
 					call.args.amount = result;
 					changeRequest = true;
-				}
-			}
-			/**
-			 * Specify the amount for keys and spheres of titan artifacts
-			 * Указать колличество для ключей и сфер артефактов титанов
-			 */
-			if (isChecked('countControl') &&
-				(call.name == 'artifactChestOpen' ||
-				call.name == 'titanArtifactChestOpen') &&
-				call.args.amount > 1 &&
-				call.args.free &&
-				!changeRequest) {
-				artifactChestOpenCallName = call.name;
-				const startAmount = call.args.amount;
-				let result = await popup.confirm(I18N('MSG_SPECIFY_QUANT'), [{ msg: I18N('BTN_OPEN'), isInput: true, default: 1, color: 'green' }]);
-				if (result) {
-					const openChests = result;
-					let sphere = result < 10 ? 1 : 10;
-					call.args.amount = sphere;
-					for (let count = openChests - sphere; count > 0; count -= sphere) {
-						if (count < 10) sphere = 1;
-						const ident = artifactChestOpenCallName + "_" + count;
-						testData.calls.push({
-							name: artifactChestOpenCallName,
-							args: {
-								amount: sphere,
-								free: true,
-							},
-							ident: ident
-						});
-						if (!Array.isArray(requestHistory[this.uniqid].calls[call.name])) {
-							requestHistory[this.uniqid].calls[call.name] = [requestHistory[this.uniqid].calls[call.name]];
-						}
-						requestHistory[this.uniqid].calls[call.name].push(ident);
-					}
 
-					const consumableId = call.name == 'artifactChestOpen' ? 45 : 55;
-					cheats.updateInventory({
-						consumable: {
-							[consumableId]: -(openChests - startAmount),
-						},
-					});
-					artifactChestOpen = true;
-					changeRequest = true;
+					correctShowOpenArtifact = 0;
+					if ((call.name == 'artifactChestOpen' || call.name == 'titanArtifactChestOpen') && call.args.amount > 20) {
+						correctShowOpenArtifact = 3;
+					}
 				}
 			}
 			if (call.name == 'consumableUseLootBox') {
@@ -2839,9 +2849,6 @@ async function checkChangeSend(sourceData, tempData) {
 					]);
 					call.args.amount = result;
 					changeRequest = true;
-				}
-				if (isChecked('countControl') && call.args.libId >= 362 && call.args.libId <= 389) {
-						this.massOpen = call.args.libId;
 				}
 			}
 			if (call.name == 'invasion_bossStart' && isChecked('tryFixIt_v2')) {
@@ -2949,9 +2956,7 @@ async function checkChangeResponse(response) {
 				respond.results = [];
 			}
 		}
-		let mainReward = null;
 		const allReward = {};
-		let countTypeReward = 0;
 		let readQuestInfo = false;
 		for (const call of respond.results) {
 			/**
@@ -3204,76 +3209,6 @@ async function checkChangeResponse(response) {
 				isChange = true;
 			}
 			/**
-			 * Opening keys and spheres of titan artifacts
-			 * Открытие ключей и сфер артефактов титанов
-			 */
-			if (artifactChestOpen &&
-				(call.ident == callsIdent[artifactChestOpenCallName] ||
-					(callsIdent[artifactChestOpenCallName] && callsIdent[artifactChestOpenCallName].includes(call.ident)))) {
-				let reward = call.result.response[artifactChestOpenCallName == 'artifactChestOpen' ? 'chestReward' : 'reward'];
-
-				reward.forEach(e => {
-					for (let f in e) {
-						if (!allReward[f]) {
-							allReward[f] = {};
-						}
-						for (let o in e[f]) {
-							if (!allReward[f][o]) {
-								allReward[f][o] = e[f][o];
-								countTypeReward++;
-							} else {
-								allReward[f][o] += e[f][o];
-							}
-						}
-					}
-				});
-
-				if (!call.ident.includes(artifactChestOpenCallName)) {
-					mainReward = call.result.response;
-				}
-			}
-
-			if (countTypeReward > 20) {
-				correctShowOpenArtifact = 3;
-			} else {
-				correctShowOpenArtifact = 0;
-			}
-
-			/**
-			 * Sum the result of opening Pet Eggs
-			 * Суммирование результата открытия яиц питомцев
-			 */
-			if (isChecked('countControl') && call.ident == callsIdent['pet_chestOpen']) {
-				const rewards = call.result.response.rewards;
-				if (rewards.length > 10) {
-					/**
-					 * Removing pet cards
-					 * Убираем карточки петов
-					 */
-					for (const reward of rewards) {
-						if (reward.petCard) {
-							delete reward.petCard;
-						}
-					}
-				}
-				rewards.forEach(e => {
-					for (let f in e) {
-						if (!allReward[f]) {
-							allReward[f] = {};
-						}
-						for (let o in e[f]) {
-							if (!allReward[f][o]) {
-								allReward[f][o] = e[f][o];
-							} else {
-								allReward[f][o] += e[f][o];
-							}
-						}
-					}
-				});
-				call.result.response.rewards = [allReward];
-				isChange = true;
-			}
-			/**
 			 * Removing titan cards
 			 * Убираем карточки титанов
 			 */
@@ -3310,45 +3245,6 @@ async function checkChangeResponse(response) {
 					countLootBox += +count;
 					mergeItemsObj(lootBox, recursionResult);
 					isChange = true;
-				}
-
-				if (this.massOpen) {
-					if (
-						await popup.confirm(I18N('OPEN_ALL_EQUIP_BOXES'), [
-							{ msg: I18N('BTN_OPEN'), result: true, color: 'green' },
-							{ msg: I18N('BTN_NO'), result: false, isClose: true, color: 'red' },
-						])
-					) {
-						const consumable = await Send({ calls: [{ name: 'inventoryGet', args: {}, ident: 'inventoryGet' }] }).then((e) =>
-							Object.entries(e.results[0].result.response.consumable)
-						);
-						const calls = [];
-						const deleteItems = {};
-						for (const [libId, amount] of consumable) {
-							if (libId != this.massOpen && libId >= 362 && libId <= 389) {
-								calls.push({
-									name: 'consumableUseLootBox',
-									args: { libId, amount },
-									ident: 'consumableUseLootBox_' + libId,
-								});
-								deleteItems[libId] = -amount;
-							}
-						}
-						const responses = await Send({ calls }).then((e) => e.results.map((r) => r.result.response).flat());
-
-						for (const loot of responses) {
-							const [count, result] = Object.entries(loot).pop();
-							countLootBox += +count;
-
-							mergeItemsObj(lootBox, result);
-						}
-						isChange = true;
-
-						this.onReadySuccess = () => {
-							cheats.updateInventory({ consumable: deleteItems });
-							cheats.refreshInventory();
-						};
-					}
 				}
 
 				if (isChange) {
@@ -3638,14 +3534,6 @@ async function checkChangeResponse(response) {
 			}
 			*/
 		}
-
-		if (mainReward && artifactChestOpen) {
-			console.log(allReward);
-			mainReward[artifactChestOpenCallName == 'artifactChestOpen' ? 'chestReward' : 'reward'] = [allReward];
-			artifactChestOpen = false;
-			artifactChestOpenCallName = '';
-			isChange = true;
-		}
 	} catch(err) {
 		console.log("Request(response, " + this.uniqid + "):\n", "Error:\n", response, err);
 	}
@@ -3927,7 +3815,7 @@ class MouseClicker {
 	}
 }
 
-let extintionsList = [];
+const extentionsList = [];
 /**
  * Creates an interface
  *
@@ -3940,14 +3828,15 @@ function createInterface() {
 	scriptMenu.init();
 	scriptMenu.addHeader(GM_info.script.name, justInfo);
 	const versionHeader = scriptMenu.addHeader('v' + GM_info.script.version);
-	if (extintionsList.length) {
+	const { extentionsList } = HWHData;
+	if (extentionsList.length) {
 		versionHeader.title = '';
 		versionHeader.style.color = 'red';
-		for (const extintion of extintionsList) {
-			const { name, ver, author } = extintion;
+		for (const extention of extentionsList) {
+			const { name, ver, author } = extention;
 			versionHeader.title += name + ', v' + ver + ' by ' + author + '\n';
 		}
-		versionHeader.innerText += ` [${extintionsList.length}]`;
+		versionHeader.innerText += ` [${extentionsList.length}]`;
 	}
 	// AutoClicker
 	const hkm = new HotkeyManager();
@@ -3974,7 +3863,8 @@ function createInterface() {
 }
 
 function addExtentionName(name, ver, author) {
-	extintionsList.push({
+	const { extentionsList } = HWHData;
+	extentionsList.push({
 		name,
 		ver,
 		author,
@@ -4233,6 +4123,12 @@ this.HWHData = {
 	countPredictionCard,
 	actionsPopupButtons,
 	othersPopupButtons,
+	/**
+	 * @deprecated Use extentionsList
+	 * @see extentionsList
+	 */
+	extintionsList: extentionsList,
+	extentionsList,
 };
 
 /**
@@ -5351,6 +5247,7 @@ class ScriptMenu extends EventEmitterMixin() {
 				box-shadow: -1px 1px 3px black;
 				cursor: pointer;
 				box-sizing: border-box;
+			z-index: 1;
 			}
 			.scriptMenu_close:hover {
 				filter: brightness(1.2);
@@ -5740,7 +5637,7 @@ class ScriptMenu extends EventEmitterMixin() {
 
 		const buttonText = document.createElement('div');
 		buttonText.classList.add('scriptMenu_btnPlate', this.getButtonColor(color));
-		buttonText.innerText = name;
+		buttonText.innerHTML = name;
 		button.appendChild(buttonText);
 
 		if (dot) {
@@ -8624,6 +8521,19 @@ function hackGame() {
 				}
 				const adv = b.raw.seasonAdventure.list[1];
 				adv.clientData.asset = 'dialog_season_adventure_tiles';
+
+				const mapData = b.raw.tiledMap.list[3];
+				const mapExtraData = mapData.map.mapExtraData;
+				const chestLevels = mapExtraData.chestLevels;
+				const tiledMapLevels = b.raw.tiledMap.level;
+
+				for (const id in tiledMapLevels) {
+					const level = tiledMapLevels[id];
+					if (chestLevels.includes(level.level)) {
+						level.clientData.graphics.visible = ['hex_heal'];
+						level.clientData.graphics.fogged = ['fog', 'question'];
+					}
+				}
 			} catch (e) {
 				console.warn(e);
 			}
@@ -11968,7 +11878,7 @@ function executeAutoBattle(resolve, reject) {
 			startBattle();
 			return;
 		}
-		/*if (nameFuncStartBattle !== 'missionStart')*/ cancelEndBattle(e);
+		cancelEndBattle(e);
 	}
 	/**
 	 * Cancel fight
@@ -12456,17 +12366,21 @@ class dailyQuests {
 			setSaveVal('selectedActions', selectedActions);
 		}
 
-		const calls = [];
 		let countChecked = 0;
 		for (const task of taskList) {
 			if (task.checked) {
-				countChecked++;
 				const quest = this.dataQuests[task.name];
 				console.log(quest.description);
 
 				if (quest.doItCall) {
 					const doItCall = quest.doItCall.call(this);
-					calls.push(...doItCall);
+					try {
+						await Caller.send(doItCall);
+					} catch (e) {
+						console.error(e);
+						continue;
+					}
+					countChecked++;
 				}
 			}
 		}
@@ -12476,10 +12390,6 @@ class dailyQuests {
 			return;
 		}
 
-		const result = await Send(JSON.stringify({ calls }));
-		if (result.error) {
-			console.error(result.error, result.error.call);
-		}
 		this.end(`${I18N('COMPLETED_QUESTS')}: ${countChecked}`);
 	}
 
