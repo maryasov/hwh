@@ -3,7 +3,7 @@
 // @name:en			HeroWarsHelperMod
 // @name:ru			HeroWarsHelperMod
 // @namespace		HeroWarsHelperMod
-// @version			2.411.25-11-18-14-10
+// @version			2.418.25-12-03-21-40
 // @description		Automation of actions for the game Hero Wars
 // @description:en	Automation of actions for the game Hero Wars
 // @description:ru	Автоматизация действий для игры Хроники Хаоса
@@ -2353,7 +2353,7 @@ async function checkChangeSend(sourceData, tempData) {
 			]);
 		}
 
-		let changeRequest = false;
+		this._isChangeRequest = false;
 		const testData = JSON.parse(tempData);
 		for (const call of testData.calls) {
 				requestHistory[this.uniqid].calls[call.name] = call.ident;
@@ -2363,10 +2363,8 @@ async function checkChangeSend(sourceData, tempData) {
 			 */
 			if ((call.name == 'adventure_endBattle' ||
 				call.name == 'adventureSolo_endBattle' ||
-				call.name == 'clanWarEndBattle' &&
-				isChecked('cancelBattle') ||
-				call.name == 'crossClanWar_endBattle' &&
-				isChecked('cancelBattle') ||
+					(call.name == 'clanWarEndBattle' && isChecked('cancelBattle')) ||
+					(call.name == 'crossClanWar_endBattle' && isChecked('cancelBattle')) ||
 				call.name == 'brawl_endBattle' ||
 				call.name == 'towerEndBattle' ||
 				call.name == 'invasion_bossEnd' ||
@@ -2403,7 +2401,7 @@ async function checkChangeSend(sourceData, tempData) {
 						if (result.result?.win) {
 							call.args.result = result.result;
 							call.args.progress = result.progress;
-							changeRequest = true;
+							this._isChangeRequest = true;
 						} else if (result.value > 0) {
 							if (
 								await popup.confirm(I18N('DEFEAT') + '<br>' + I18N('BEST_RESULT', { value: result.value }), [
@@ -2413,7 +2411,7 @@ async function checkChangeSend(sourceData, tempData) {
 							) {
 								call.args.result = result.result;
 								call.args.progress = result.progress;
-								changeRequest = true;
+								this._isChangeRequest = true;
 							}
 						}
 					} catch (error) {
@@ -2434,7 +2432,7 @@ async function checkChangeSend(sourceData, tempData) {
 						call.args.result = result.result;
 						call.args.progress = result.progress;
 						msgResult = I18N('VICTORY');
-						changeRequest = true;
+							this._isChangeRequest = true;
 					}
 					setProgress(msgResult, false, hideProgress);
 					}
@@ -2474,7 +2472,7 @@ async function checkChangeSend(sourceData, tempData) {
 						}
 						fixBattle(call.args.progress[0].attackers.heroes);
 						fixBattle(call.args.progress[0].defenders.heroes);
-						changeRequest = true;
+						this._isChangeRequest = true;
 						if (resultPopup > 1) {
 							this.onReadySuccess = testAutoBattle;
 							// setTimeout(bossBattle, 1000);
@@ -2486,7 +2484,7 @@ async function checkChangeSend(sourceData, tempData) {
 
 						fixBattle(call.args.progress[0].attackers.heroes);
 						fixBattle(call.args.progress[0].defenders.heroes);
-						changeRequest = true;
+						this._isChangeRequest = true;
 						if (resultPopup > 1) {
 							this.onReadySuccess = testAutoBattle;
 						}
@@ -2618,7 +2616,7 @@ async function checkChangeSend(sourceData, tempData) {
 						fixBattle(call.args.progress[0].attackers.heroes);
 						fixBattle(call.args.progress[0].defenders.heroes);
 					}
-					changeRequest = true;
+					this._isChangeRequest = true;
 				}
 				const isStat = popup.getCheckBoxes().find((e) => e.name === 'isStat');
 				if (isStat.checked) {
@@ -2673,7 +2671,7 @@ async function checkChangeSend(sourceData, tempData) {
 				if (call.args.isRaid) {
 					if (HWHData.countPredictionCard <= 0) {
 						delete call.args.isRaid;
-						changeRequest = true;
+						this._isChangeRequest = true;
 					} else if (HWHData.countPredictionCard > 0) {
 						HWHData.countPredictionCard--;
 					}
@@ -2685,14 +2683,14 @@ async function checkChangeSend(sourceData, tempData) {
 				 */
 				const lastBattle = lastDungeonBattleData;
 				if (lastBattle && !call.args.isRaid) {
-					if (changeRequest) {
-						lastBattle.progress = [{ attackers: { input: ["auto", 0, 0, "auto", 0, 0] } }];
+					if (this._isChangeRequest) {
+						lastBattle.progress = [{ attackers: { input: ['auto', 0, 0, 'auto', 0, 0] } }];
 					} else {
 						lastBattle.progress = call.args.progress;
 					}
 					const result = await Calc(lastBattle);
 
-					if (changeRequest) {
+					if (this._isChangeRequest) {
 						call.args.progress = result.progress;
 						call.args.result = result.result;
 					}
@@ -2718,7 +2716,7 @@ async function checkChangeSend(sourceData, tempData) {
 				if (lastAnswer && isChecked('getAnswer')) {
 					call.args.answerId = lastAnswer;
 					lastAnswer = null;
-					changeRequest = true;
+					this._isChangeRequest = true;
 				}
 			}
 			/**
@@ -2765,7 +2763,7 @@ async function checkChangeSend(sourceData, tempData) {
 					result: call.args.result,
 					heroes: call.args.progress[0].attackers.heroes,
 					count: 0,
-				}
+				};
 				setTimeout(async () => {
 					if (
 						!isSendsMission &&
@@ -2826,7 +2824,7 @@ async function checkChangeSend(sourceData, tempData) {
 						},
 					});
 					call.args.amount = result;
-					changeRequest = true;
+					this._isChangeRequest = true;
 
 					correctShowOpenArtifact = 0;
 					if ((call.name == 'artifactChestOpen' || call.name == 'titanArtifactChestOpen') && call.args.amount > 20) {
@@ -2848,7 +2846,7 @@ async function checkChangeSend(sourceData, tempData) {
 						{ msg: I18N('BTN_OPEN'), isInput: true, default: call.args.amount, color: 'green' },
 					]);
 					call.args.amount = result;
-					changeRequest = true;
+					this._isChangeRequest = true;
 				}
 			}
 			if (call.name == 'invasion_bossStart' && isChecked('tryFixIt_v2')) {
@@ -2869,7 +2867,7 @@ async function checkChangeSend(sourceData, tempData) {
 							call.args.pet = pack.pet;
 							call.args.heroes = pack.heroes;
 							call.args.favor = pack.favor;
-							changeRequest = true;
+							this._isChangeRequest = true;
 						}
 					}
 				}
@@ -2907,13 +2905,15 @@ async function checkChangeSend(sourceData, tempData) {
 			// 			{ msg: I18N('BTN_RUN'), isInput: true, default: call.args.times },
 			// 		]));
 			// 		call.args.times = result > call.args.times ? call.args.times : result;
-			// 		changeRequest = true;
+			// 		this._isChangeRequest = true;
 			// 	}
 			// }
+
+			Events.emit('checkChangeSend', this, call);
 		}
 
 		let headers = requestHistory[this.uniqid].headers;
-		if (changeRequest) {
+		if (this._isChangeRequest) {
 			sourceData = JSON.stringify(testData);
 			headers['X-Auth-Signature'] = getSignature(headers, sourceData);
 		}
@@ -2934,8 +2934,7 @@ async function checkChangeSend(sourceData, tempData) {
  */
 async function checkChangeResponse(response) {
 	try {
-		isChange = false;
-		let nowTime = Math.round(Date.now() / 1000);
+		this._isChangeResponse = false;
 		callsIdent = requestHistory[this.uniqid].calls;
 		respond = JSON.parse(response);
 		/**
@@ -2943,7 +2942,7 @@ async function checkChangeResponse(response) {
 		 * Если запрос вернул ошибку удаляет ошибку (убирает ошибки синхронизации)
 		 */
 		if (respond.error) {
-			isChange = true;
+			this._isChangeResponse = true;
 			console.error(respond.error);
 			if (isChecked('showErrors')) {
 				popup.confirm(I18N('ERROR_MSG', {
@@ -2989,7 +2988,7 @@ async function checkChangeResponse(response) {
 				if (billings && bundle) {
 					call.result.response.billings = call.result.response.billings.filter((e) => ['repeatableOffer'].includes(e.type));
 					call.result.response.bundle = [];
-					isChange = true;
+					this._isChangeResponse = true;
 				}
 			}
 			/**
@@ -3004,7 +3003,7 @@ async function checkChangeResponse(response) {
 					call.result.response = offers.filter(
 						(e) => !['addBilling', 'bundleCarousel'].includes(e.type) || ['idleResource', 'stagesOffer'].includes(e.offerType)
 					);
-					isChange = true;
+					this._isChangeResponse = true;
 				}
 			}
 			/**
@@ -3013,7 +3012,7 @@ async function checkChangeResponse(response) {
 			 */
 			if (getSaveVal('noOfferDonat') && call.result?.bundleUpdate) {
 				delete call.result.bundleUpdate;
-				isChange = true;
+				this._isChangeResponse = true;
 			}
 			/**
 			 * Hiding donation offers 4
@@ -3024,7 +3023,7 @@ async function checkChangeResponse(response) {
 				call.result.specialOffers = offers.filter(
 					(e) => !['addBilling', 'bundleCarousel'].includes(e.type) || ['idleResource', 'stagesOffer'].includes(e.offerType)
 				);
-				isChange = true;
+				this._isChangeResponse = true;
 			}
 			/**
 			 * Copies a quiz question to the clipboard
@@ -3095,20 +3094,41 @@ async function checkChangeResponse(response) {
 				}
 			}
 			/**
+			 * Prolongation of the brawl
+			 * Продление потасовки
+			 */
+			if (call.ident == callsIdent['brawl_getInfo']) {
+				if (call.result.response?.endDate) {
+					call.result.response.endDate += 86400;
+					this._isChangeResponse = true;
+				}
+			}
+			/**
+			 * Access to Prestige rewards and quests on a non-prestige day
+			 * Доступ к наградам и квестам престижа в день без престижа
+			 */
+			if (call.ident == callsIdent['clan_prestigeGetInfo']) {
+				if (!call.result.response.prestigeId) {
+					call.result.response.prestigeId = 2;
+					call.result.response.endTime = call.result.response.nextTime;
+					this._isChangeResponse = true;
+				}
+			}
+			/**
 			 * Start of the battle for recalculation
 			 * Начало боя для прерасчета
 			 */
 			if (call.ident == callsIdent['clanWarAttack'] ||
 				call.ident == callsIdent['crossClanWar_startBattle'] ||
 				call.ident == callsIdent['bossAttack'] ||
-				call.ident == callsIdent['battleGetReplay'] ||
 				call.ident == callsIdent['brawl_startBattle'] ||
 				call.ident == callsIdent['adventureSolo_turnStartBattle'] ||
 				call.ident == callsIdent['invasion_bossStart'] ||
 				call.ident == callsIdent['titanArenaStartBattle'] ||
 				call.ident == callsIdent['towerStartBattle'] ||
 				call.ident == callsIdent['epicBrawl_startBattle'] ||
-				call.ident == callsIdent['adventure_turnStartBattle']) {
+				call.ident == callsIdent['adventure_turnStartBattle'] ||
+				call.ident == callsIdent['battleGetReplay'] && call.result?.response?.replay?.type !== "clan_raid") {
 				let battle = call.result.response.battle || call.result.response.replay;
 				if (call.ident == callsIdent['brawl_startBattle'] ||
 					call.ident == callsIdent['bossAttack'] ||
@@ -3122,17 +3142,7 @@ async function checkChangeResponse(response) {
                      missionItems = {}
                    }
 				lastBattleInfo = battle;
-				if (call.ident == callsIdent['battleGetReplay'] && call.result.response.replay.type ===	"clan_raid") {
-					if (call?.result?.response?.replay?.result?.damage) {
-						const damages = Object.values(call.result.response.replay.result.damage);
-						const bossDamage = damages.reduce((a, v) => a + v, 0);
-						setProgress(I18N('BOSS_DAMAGE') + bossDamage.toLocaleString(), false, hideProgress);
-						continue;
-					}
-				}
-				if (!isChecked('preCalcBattle')) {
-					continue;
-				}
+				if (isChecked('preCalcBattle')) {
 				const preCalcBattle = structuredClone(battle);
 				setProgress(I18N('BEING_RECALC'));
 				let battleDuration = 120;
@@ -3168,9 +3178,8 @@ async function checkChangeResponse(response) {
                     pushReward(preCalcBattle.reward)
                     // console.log('preCalcBattle', preCalcBattle)
                     console.log('missionItems', rewardText(missionItems, knownItems).replaceAll('<br>', '\n'))
-				Promise.all(actions)
-					.then(e => {
-						e = e.map(n => ({win: n.result.win, time: n.battleTime}));
+                    Promise.all(actions).then((e) => {
+                              e = e.map((n) => ({ win: n.result.win, time: n.battleTime }));
 						let firstBattle = e.shift();
 						const timer = Math.floor(battleDuration - firstBattle.time);
 						const min = ('00' + Math.floor(timer / 60)).slice(-2);
@@ -3180,9 +3189,18 @@ async function checkChangeResponse(response) {
 							const countWin = e.reduce((w, s) => w + s.win, 0);
 							msg += ` ${I18N('CHANCE_TO_WIN')}: ${Math.floor((countWin / e.length) * 100)}% (${e.length})`;
 						}
-						msg += `, ${min}:${sec}`
-						setProgress(msg, false, hideProgress)
+						msg += `, ${min}:${sec}`;
+						setProgress(msg, false, hideProgress);
 					});
+			}
+			}
+
+			if (call.ident == callsIdent['battleGetReplay'] && call.result.response.replay.type ===	"clan_raid") {
+				if (call?.result?.response?.replay?.result?.damage) {
+					const damages = Object.values(call.result.response.replay.result.damage);
+					const bossDamage = damages.reduce((a, v) => a + v, 0);
+					setProgress(I18N('BOSS_DAMAGE') + bossDamage.toLocaleString(), false, hideProgress);
+				}
 			}
 			/**
 			 * Start of the Asgard boss fight
@@ -3206,7 +3224,7 @@ async function checkChangeResponse(response) {
 				for (let n in chains) {
 					chains[n] = 9999;
 				}
-				isChange = true;
+				this._isChangeResponse = true;
 			}
 			/**
 			 * Removing titan cards
@@ -3219,7 +3237,7 @@ async function checkChangeResponse(response) {
 							delete reward.titanCard;
 						}
 					}
-					isChange = true;
+					this._isChangeResponse = true;
 				}
 			}
 			/**
@@ -3244,10 +3262,10 @@ async function checkChangeResponse(response) {
 					const [count, recursionResult] = await openRussianDolls(lastRussianDollId, newCount);
 					countLootBox += +count;
 					mergeItemsObj(lootBox, recursionResult);
-					isChange = true;
+					this._isChangeResponse = true;
 				}
 
-				if (isChange) {
+				if (this._isChangeResponse) {
 					call.result.response = {
 						[countLootBox]: lootBox,
 					};
@@ -3296,7 +3314,7 @@ async function checkChangeResponse(response) {
 			if (call.ident == callsIdent['serverGetAll'] && isChecked('hideServers')) {
 				let servers = call.result.response.users.map(s => s.serverId)
 				call.result.response.servers = call.result.response.servers.filter(s => servers.includes(s.id));
-				isChange = true;
+				this._isChangeResponse = true;
 			}
 			/**
 			 * Displays player positions in the adventure
@@ -3330,7 +3348,7 @@ async function checkChangeResponse(response) {
 			if (call.ident == callsIdent['missionRaid']) {
 				if (call.result?.heroesMerchant) {
 					delete call.result.heroesMerchant;
-					isChange = true;
+					this._isChangeResponse = true;
 				}
 			}
 			/** missionTimer */
@@ -3530,17 +3548,18 @@ async function checkChangeResponse(response) {
 						userPositions[townPos.userId] = townPos.position;
 					}
 				}
-				isChange = true;
+				this._isChangeResponse = true;
 			}
 			*/
+			Events.emit('checkChangeResponse', this, call, callsIdent);
 		}
 	} catch(err) {
 		console.log("Request(response, " + this.uniqid + "):\n", "Error:\n", response, err);
 	}
 
-	if (isChange) {
+	if (this._isChangeResponse) {
 		Object.defineProperty(this, 'responseText', {
-			writable: true
+			writable: true,
 		});
 		this.responseText = JSON.stringify(respond);
 	}
@@ -4032,7 +4051,6 @@ let hideTimeoutProgress = 0;
 function hideProgress(timeout) {
 	const { ScriptMenu } = HWHClasses;
 	const scriptMenu = ScriptMenu.getInst();
-	timeout = timeout || 0;
 	clearTimeout(hideTimeoutProgress);
 	hideTimeoutProgress = setTimeout(function () {
 		scriptMenu.setStatus('');
@@ -4049,7 +4067,10 @@ function setProgress(text, hide, onclick) {
 	scriptMenu.setStatus(text, onclick);
 	hide = hide || false;
 	if (hide) {
-		hideProgress(3000);
+		if (typeof hide != 'number') {
+			hide = 3000;
+		}
+		hideProgress(hide);
 	}
 }
 
@@ -4794,7 +4815,8 @@ const popup = new (function () {
 		}
 
 		const button = document.createElement('div');
-		button.classList.add('PopUp_btnGap', option.color ?? 'indigo');
+		const classes = option.classes ?? [];
+		button.classList.add('PopUp_btnGap', option.color ?? 'indigo', ...classes);
 		button.title = option.title || '';
 		this.btnRow.append(button);
 
@@ -4868,7 +4890,7 @@ const popup = new (function () {
 		contCheckbox.appendChild(checkbox)
 
 		const checkboxLabel = document.createElement('label');
-		checkboxLabel.innerText = checkBox.label;
+		checkboxLabel.innerHTML = checkBox.label;
 		checkboxLabel.title = checkBox.title || '';
 		checkboxLabel.setAttribute('for', checkbox.id);
 		contCheckbox.appendChild(checkboxLabel);
@@ -5727,7 +5749,7 @@ class ScriptMenu extends EventEmitterMixin() {
 		divCheckbox.appendChild(checkbox);
 
 		const checkboxLabel = document.createElement('label');
-		checkboxLabel.innerText = label;
+		checkboxLabel.innerHTML = label;
 		checkboxLabel.setAttribute('for', checkbox.id);
 		divCheckbox.appendChild(checkboxLabel);
 
@@ -7480,7 +7502,7 @@ function executeTitanArena(resolve, reject) {
 	 * Обработка результатов расчета битвы
 	 */
 	async function resultCalcBattle(resultBattle) {
-		console.log('resultCalcBattle', currentRival, attempts, resultBattle.result.win);
+		// console.log('resultCalcBattle', currentRival, attempts, resultBattle.result.win);
 		/**
 		 * If the current calculation of victory is not a chance or the attempt ended with the finish the battle
 		 * Если текущий расчет победа или шансов нет или попытки кончились завершаем бой
@@ -8410,16 +8432,18 @@ function hackGame() {
 	 * Перейти к Войне Гильдий
 	 */
 	this.goClanWar = function () {
+		const GM_0 = getProtoFn(Game.GameModel, 0);
 		let instance = getFnP(Game.GameModel, 'get_instance');
-		let player = Game.GameModel[instance]().A;
+		let player = Game.GameModel[instance]()[GM_0];
 		let clanWarSelect = selfGame['game.mechanics.cross_clan_war.popup.selectMode.CrossClanWarSelectModeMediator'];
 		new clanWarSelect(player).open();
 	};
 
 	/** Перейти к Острову гильдии */
 	this.goClanIsland = function () {
+		const GM_0 = getProtoFn(Game.GameModel, 0);
 		let instance = getFnP(Game.GameModel, 'get_instance');
-		let player = Game.GameModel[instance]().A;
+		let player = Game.GameModel[instance]()[GM_0];
 		let clanIslandSelect = selfGame['game.view.gui.ClanIslandPopupMediator'];
 		new clanIslandSelect(player).open();
 	};
@@ -8430,13 +8454,14 @@ function hackGame() {
 	 * Переместиться в BrawlShop
 	 */
 	this.goBrawlShop = () => {
+		const GM_0 = getProtoFn(Game.GameModel, 0);
 		const instance = getFnP(Game.GameModel, 'get_instance');
 		const P_36 = getProtoFn(selfGame['game.model.user.Player'], 36);
 		const PSD_0 = getProtoFn(selfGame['game.model.user.shop.PlayerShopData'], 0);
 		const IM_0 = getProtoFn(selfGame['haxe.ds.IntMap'], 0);
 		const PSDE_4 = getProtoFn(selfGame['game.model.user.shop.PlayerShopDataEntry'], 4);
 
-		const player = Game.GameModel[instance]().A;
+		const player = Game.GameModel[instance]()[GM_0];
 		const shop = player[P_36][PSD_0][IM_0][1038][PSDE_4];
 		const shopPopup = new selfGame['game.mechanics.brawl.mediator.BrawlShopPopupMediator'](player, shop);
 		shopPopup.open(new selfGame['game.mediator.gui.popup.PopupStashEventParams']());
@@ -8448,12 +8473,13 @@ function hackGame() {
 	 * Возвращает все магазины из данных игры
 	 */
 	this.getShops = () => {
+		const GM_0 = getProtoFn(Game.GameModel, 0);
 		const instance = getFnP(Game.GameModel, 'get_instance');
 		const P_36 = getProtoFn(selfGame['game.model.user.Player'], 36);
 		const PSD_0 = getProtoFn(selfGame['game.model.user.shop.PlayerShopData'], 0);
 		const IM_0 = getProtoFn(selfGame['haxe.ds.IntMap'], 0);
 
-		const player = Game.GameModel[instance]().A;
+		const player = Game.GameModel[instance]()[GM_0];
 		return player[P_36][PSD_0][IM_0];
 	};
 
@@ -9024,7 +9050,6 @@ this.sendsMission = async function (param) {
 				}
 
 				param.count++;
-                    // TD вывод остановки
 				setProgress(`${I18N('MISSIONS_PASSED')}: ${param.count} (${I18N('STOP')})`, false, () => {
 					isStopSendMission = true;
 				});
@@ -10164,7 +10189,7 @@ class epicBrawl {
 	}
 }
 
-function countdownTimer(seconds, message, onClick = null) {
+function countdownTimer(seconds, message, onClick = null, autoHide = true) {
 	message = message || I18N('TIMER');
 	const stopTimer = Date.now() + seconds * 1e3;
 	const isOnClick = typeof onClick === 'function';
@@ -10184,7 +10209,9 @@ function countdownTimer(seconds, message, onClick = null) {
 			setProgress(`${message} ${remaining.toFixed(2)}`, false, clickHandler);
 			if (now > stopTimer) {
 				clearInterval(interval);
+				if (autoHide) {
 				setProgress('', true);
+				}
 				resolve(true);
 			}
 		}, 100);
@@ -13594,7 +13621,7 @@ class executeBrawls {
 
 			// Автоматический подбор пачки
 			if (this.isAuto) {
-				if (this.mandatoryId <= 4000 && this.mandatoryId != 13) {
+				if (this.mandatoryId < 4000 && this.mandatoryId != 13) {
 					this.end(I18N('BRAWL_AUTO_PACK_NOT_CUR_HERO'));
 					return;
 				}
